@@ -1,13 +1,23 @@
 require 'rails_helper'
 
 RSpec.describe "/stores", type: :request do
+  let(:user) {
+    user = User.new(email: "user_01@example.com", password: "123456", password_confirmation: "123456")
+    user.save!
+    user
+  }
 
   let(:valid_attributes) {
-    {name: "Great Store"}
+    {name: "Great Store", user: user}
   }
 
   let(:invalid_attributes) {
     {name: nil}
+  }
+
+  # Autentica o usuário antes de criar uma loja
+  before {
+    sign_in(user)
   }
 
   describe "GET /index" do
