@@ -3,8 +3,8 @@ Rails.application.routes.draw do
   resources :stores
   get "listing" => "products#listing"
 
-  get "up" => "rails/health#show", as: :rails_health_check
+  post "new" => "registrations#create", as: :create_registration
 
-  # Defines the root path route ("/")
   root "welcome#index"
+  get "up" => "rails/health#show", as: :rails_health_check
 end
