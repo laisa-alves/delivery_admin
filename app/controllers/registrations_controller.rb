@@ -1,6 +1,7 @@
 class RegistrationsController < ApplicationController
   skip_forgery_protection only: [:create, :me, :sign_in]
   before_action :authenticate!, only: [:me]
+  rescue_from User::InvalidToken, with: :not_authorized
 
   def sign_in
     user = User.find_by(email: sign_in_params[:email])
@@ -15,6 +16,7 @@ class RegistrationsController < ApplicationController
   end
 
   def me
+    render json: {id: current_user.id, email: current_user.email, role: current_user.role}
   end
 
   def create
@@ -25,6 +27,10 @@ class RegistrationsController < ApplicationController
   end
 
   private
+  def not_authorized(e)
+    render json: {message: "Nope!"}, status:401
+  end
+
   def sign_in_params
     params.required(:signin).permit(:email, :password)
   end

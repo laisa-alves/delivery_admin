@@ -1,15 +1,23 @@
 class User < ApplicationRecord
+  class InvalidToken < StandardError; end
+
   enum :role, [:admin, :seller, :buyer]
   has_many :stores
 
   # Cria o token para usuário válido
   def self.token_for(user)
+    jwt_headers = {exp: 1.hour.from_now.to_i}
     payload = {id: user.id, email: user.email, role: user.role}
-    JWT.encode payload, "muito.secreto", "HS256"
+    JWT.encode payload.merge(jwt_headers), "muito.secreto", "HS256"
   end
 
+  # Retorna dados do usuário a partir do token
   def self.from_token(token)
-    nil
+    decoded = JWT.decode(token, "muito.secreto", true, {algorithm: "HS256"})
+    user_data = decoded[0].with_indifferent_access
+    User.find(user_data[:id])
+  rescue JWT::ExpiredSignature
+    raise InvalidToken.new
   end
 
   # Include default devise modules. Others available are:
