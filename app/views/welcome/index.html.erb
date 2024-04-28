@@ -1,8 +1,16 @@
 <h1>Welcome to delivery</h1>
+
+<p style="color: red"><%= notice %></p>
+
 <% if current_user %>
   <p>Logged in as <strong><%= current_user.email %></strong></p>
   <p>Role of user: <%= current_user.role %></p>
   <%= button_to "Sign out", destroy_user_session_path, method: :delete %>
+
+  <% if current_user.admin? %>
+    <p>List all products: <%=link_to "Listing", listing_path%></p>
+  <% end %>
+
 <% else %>
   <%= link_to "Sign in", new_user_session_path %>
   or
