@@ -3,6 +3,7 @@ class User < ApplicationRecord
 
   enum :role, [:admin, :seller, :buyer]
   has_many :stores
+  validates :role, presence: true
 
   # Cria o token para usuário válido
   def self.token_for(user)
