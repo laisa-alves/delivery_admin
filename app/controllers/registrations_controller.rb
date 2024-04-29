@@ -4,7 +4,8 @@ class RegistrationsController < ApplicationController
   rescue_from User::InvalidToken, with: :not_authorized
 
   def sign_in
-    user = User.find_by(email: sign_in_params[:email])
+    access = current_credential.access
+    user = User.where(role: access).find_by(email: sign_in_params[:email])
 
     if !user || !user.valid_password?(sign_in_params[:password])
       render json: {message: "Nope!"}, status: 401
@@ -12,7 +13,6 @@ class RegistrationsController < ApplicationController
       token = User.token_for(user)
       render json: {email: user.email, token: token}
     end
-
   end
 
   def me
@@ -21,6 +21,8 @@ class RegistrationsController < ApplicationController
 
   def create
     @user = User.new(user_params)
+    @user.role = current_credential.access
+
     if @user.save!
       render json: { "email": @user.email }
     end
