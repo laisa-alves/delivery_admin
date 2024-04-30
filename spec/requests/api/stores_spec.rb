@@ -12,26 +12,9 @@ RSpec.describe "/stores", type: :request do
     user
   }
 
-  let(:credential) { Credential.create_access(:seller) }
-
-  def api_sign_in(user, credential)
-    post(
-      "/sign_in",
-      headers: {
-        "Accept" => "application/json",
-        "X-API-KEY" => credential.key
-      },
-      params: {
-        signin: {
-          email: user.email,
-          password: user.password
-        }
-      }
-    )
-    JSON.parse(response.body)
-  end
-
   # Na primeira execução do let a função é chamada e seu retorno armazenado no let. A partir disso as próximas invocações já retornam direto para o resultado da primeira execução, sem precisar resolver a função em todas as invocações.
+  
+  let(:credential) { Credential.create_access(:seller) }
   let(:signed_in) { api_sign_in(user, credential) }
 
   describe "GET /show" do
