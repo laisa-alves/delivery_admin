@@ -23,8 +23,10 @@ class RegistrationsController < ApplicationController
     @user = User.new(user_params)
     @user.role = current_credential.access
 
-    if @user.save!
+    if @user.save
       render json: { "email": @user.email }
+    else
+      render json: {"Error": "unprocessable"}, status: :unprocessable_entity
     end
   end
 
