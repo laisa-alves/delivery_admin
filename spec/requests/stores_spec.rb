@@ -132,4 +132,35 @@ RSpec.describe "/stores", type: :request do
       expect(response).to redirect_to(stores_url)
     end
   end
+
+  # Testes para admin
+  context "admin" do
+    let(:admin) {
+      User.create!(
+        email: "admin@example.com",
+        password: "123456",
+        password_confirmation: "123456",
+        role: :admin
+      )
+    }
+
+    # Esses befores afetam apenas os testes desse context
+    before {
+      Store.create!(name: "Store 1", user: user)
+      Store.create!(name: "Store 2", user: user)
+
+      sign_in(admin)
+    }
+
+    describe "GET /index" do
+      it "renders a successful response" do
+        get stores_url
+        expect(response.successful?).to eq true
+        expect(response.body).to include "Store 1"
+        expect(response.body).to include "Store 2"
+      end
+    end
+
+
+  end
 end
