@@ -144,7 +144,7 @@ RSpec.describe "/stores", type: :request do
       )
     }
 
-    # Esses befores afetam apenas os testes desse context
+    # Esse before afeta apenas os testes desse context
     before {
       Store.create!(name: "Store 1", user: user)
       Store.create!(name: "Store 2", user: user)
@@ -161,6 +161,20 @@ RSpec.describe "/stores", type: :request do
       end
     end
 
+    describe "POST /create" do
+      it "creates a new Store" do
+        store_attributes = {
+          name: "Mug Burge",
+          user_id: user.id
+        }
 
+        expect {
+          post stores_url,
+          params: { store: store_attributes}
+        }.to change(Store, :count).by(1)
+
+        expect(Store.find_by(name: "Mug Burge").user).to eq user
+      end
+    end
   end
 end
