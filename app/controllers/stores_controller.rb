@@ -27,7 +27,11 @@ class StoresController < ApplicationController
   # POST /stores or /stores.json
   def create
     @store = Store.new(store_params)
-    @store.user = current_user
+
+    # Se current_user não for admin cria a loja para pertencer ao current_user
+    if !current_user.admin?
+      @store.user = current_user
+    end
 
     respond_to do |format|
       if @store.save
@@ -71,6 +75,13 @@ class StoresController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def store_params
-      params.require(:store).permit(:name)
+      required = params.require(:store)
+
+      # Se usuário é admin permite enviar o campo de usuário (dono da loja) além do nome
+      if current_user.admin?
+        required.permit(:name, :user_id)
+      else
+        required.permit(:name)
+      end
     end
 end
