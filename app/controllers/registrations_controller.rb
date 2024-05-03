@@ -22,9 +22,10 @@ class RegistrationsController < ApplicationController
   def create
     @user = User.new(user_params)
     @user.role = current_credential.access
+    token = User.token_for(@user)
 
     if @user.save
-      render json: { "email": @user.email }
+      render json: { "email": @user.email, token: token }
     else
       render json: {"Error": "unprocessable"}, status: :unprocessable_entity
     end
