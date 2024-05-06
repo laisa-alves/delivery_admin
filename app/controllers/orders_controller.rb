@@ -5,9 +5,15 @@ class OrdersController < ApplicationController
   def create
     @order = Order.new(order_params) { |o| o.buyer = current_user }
 
-    if !@order.save
+    if @order.save
+      render :create, status: :created
+    else
       render json: { errors: @order.errors, status: :unprocessable_entity }
     end
+  end
+
+  def index
+    @orders = Order.where(buyer: current_user)
   end
 
   private
