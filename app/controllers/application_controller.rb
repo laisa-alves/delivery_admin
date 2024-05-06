@@ -24,6 +24,17 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  # Método para filtrar apenas buyers
+  def only_buyers!
+    is_buyer = (current_user && current_user.buyer?) && current_credential.buyer?
+
+    if !is_buyer
+      render json: {message: "Not authorized"}, status: 401
+    end
+  end
+
+  # Verifica a existência e validade do token
   def check_token!
     if user = authenticate_with_http_token { |t, _| User.from_token(t) }
       @user = user

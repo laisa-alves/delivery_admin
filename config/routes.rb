@@ -7,6 +7,10 @@ Rails.application.routes.draw do
   post "sign_in" => "registrations#sign_in"
   get "me" => "registrations#me"
 
+  scope :buyers do
+    resources :orders, only: [:index, :create, :update, :destroy]
+  end
+
   root "welcome#index"
   get "up" => "rails/health#show", as: :rails_health_check
 end
