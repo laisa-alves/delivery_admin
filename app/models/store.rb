@@ -4,6 +4,10 @@ class Store < ApplicationRecord
   before_validation :ensure_seller
   validates :name, presence: true, length: {minimum: 3}
 
+  has_one_attached :image do |attachable|
+    attachable.variant :thumb, resize_to_limit: [100, 100]
+  end
+
   private
 
   def ensure_seller
