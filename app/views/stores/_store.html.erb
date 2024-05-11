@@ -4,4 +4,10 @@
     <%= store.name %>
   </p>
 
+  <% if store.image.attached? %>
+    <%= link_to image_tag(store.image.variant(:thumb)), store.image %>
+  <% else %>
+    <p>Imagem não disponível</p>
+  <% end %>
+
 </div>
