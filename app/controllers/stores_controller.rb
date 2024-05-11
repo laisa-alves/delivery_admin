@@ -6,9 +6,9 @@ class StoresController < ApplicationController
   # GET /stores or /stores.json
   def index
     if current_user.admin?
-      @stores = Store.all
+      @stores = Store.includes([image_attachment: :blob])
     else
-      @stores = Store.where(user: current_user)
+      @stores = Store.where(user: current_user).includes([image_attachment: :blob])
     end
   end
 
@@ -84,9 +84,9 @@ class StoresController < ApplicationController
 
       # Se usuário é admin permite enviar o campo de usuário (dono da loja) além do nome
       if current_user.admin?
-        required.permit(:name, :user_id)
+        required.permit(:name, :user_id, :image)
       else
-        required.permit(:name)
+        required.permit(:name, :image)
       end
     end
 end
