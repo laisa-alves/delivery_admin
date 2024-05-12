@@ -2,15 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'stores/new', type: :view do
   context 'when user is seller' do
-    let(:seller) do
-      seller = User.create!(
-        email: 'seller@email.com',
-        password: '123456',
-        password_confirmation: '123456',
-        role: :seller
-      )
-      seller
-    end
+    let(:seller) { create(:user, role: :seller) }
 
     before(:each) do
       allow(view).to receive(:current_user).and_return(seller)
@@ -27,38 +19,8 @@ RSpec.describe 'stores/new', type: :view do
   end
 
   context 'when user is admin' do
-    let(:admin) do
-      admin = User.create!(
-        email: 'admin@email.com',
-        password: '123456',
-        password_confirmation: '123456',
-        role: :admin
-      )
-      admin
-    end
-
-    let(:sellers) do
-      [
-        User.create!(
-          email: 'seller1@email.com',
-          password: '123456',
-          password_confirmation: '123456',
-          role: :seller
-        ),
-        User.create!(
-          email: 'seller2@email.com',
-          password: '123456',
-          password_confirmation: '123456',
-          role: :seller
-        ),
-        User.create!(
-          email: 'seller3@email.com',
-          password: '123456',
-          password_confirmation: '123456',
-          role: :seller
-        )
-      ]
-    end
+    let(:admin) { create(:user) }
+    let(:sellers) { create_list(:user, 3, role: :seller) }
 
     before(:each) do
       allow(view).to receive(:current_user).and_return(admin)
