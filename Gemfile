@@ -50,6 +50,7 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
   gem "shoulda-matchers"
   gem "faker"
+  gem 'factory_bot_rails'
 end
 
 group :development do
