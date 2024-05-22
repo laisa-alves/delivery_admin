@@ -1,10 +1,17 @@
-<p style="color: green"><%= notice %></p>
+<div class="corner-space">
+  <p style="color: green"><%= notice %></p>
 
-<%= render @store %>
+  <%= render @store %>
 
-<div>
-  <%= link_to "Edit this store", edit_store_path(@store) %> |
-  <%= link_to "Back to stores", stores_path %>
+  <div style="display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; gap: 5px">
+      <%= link_to "Editar", edit_store_path(@store) %> |
+      <%= link_to "Voltar para lojas", stores_path %>
+    </div>
 
-  <%= button_to "Destroy this store", @store, method: :delete %>
+    <%= button_to "Excluir loja", @store, method: :delete %>
+  </div>
+
+  <hr>
+
 </div>

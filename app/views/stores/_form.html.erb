@@ -11,13 +11,13 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :name, style: "display: block" %>
+  <div style="margin-bottom: 1rem">
+    <%= form.label :name, 'Nome', style: "display: block" %>
     <%= form.text_field :name %>
   </div>
 
   <div>
-    <%= form.label :image, 'Carregar nova imagem' %>
+    <%= form.label :image, 'Carregar imagem' %>
     <br />
     <%= form.file_field :image %>
   </div>
@@ -26,13 +26,13 @@
 
   <% if current_user.admin? && store.user_id.nil? %>
     <div>
-      <%= form.label :seller, style: "display: block" %>
-      <%= form.collection_select :user_id, @sellers, :id, :email, prompt: "Sellers..." %>
+      <%= form.label :seller, 'Usuário', style: "display: block" %>
+      <%= form.collection_select :user_id, @sellers, :id, :email, prompt: "Vendedores..." %>
     </div>
   <% end %>
 
 
-  <div>
-    <%= form.submit %>
+  <div style="margin-top: 1rem">
+    <%= form.submit  %>
   </div>
 <% end %>

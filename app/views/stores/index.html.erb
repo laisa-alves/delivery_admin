@@ -1,14 +1,33 @@
-<p style="color: green"><%= notice %></p>
+<div class="corner-space">
+  <%= link_to "Página inicial", root_path %>
 
-<h1>Stores</h1>
+  <p style="color: green"><%= notice %></p>
 
-<div id="stores">
-  <% @stores.each do |store| %>
-    <%= render store %>
-    <p>
-      <%= link_to "Show this store", store %>
-    </p>
-  <% end %>
+  <h1>Lojas cadastradas</h1>
+
+  <div>
+  <%= link_to "Criar loja", new_store_path, class: "link-button" %>
+  </div>
+
+  <div id="stores">
+     <% @stores_by_user.each do |user, stores| %>
+      <div class="user-stores">
+        <h2><%= user.email %></h2>
+        
+        <% stores.each do |store| %>
+          <div class="stores-list">
+            <p>
+              <strong>Nome:</strong>
+              <%= store.name %>
+            </p>
+            <p>
+              <%= link_to "Mostrar loja", store %>
+            </p>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+
 </div>
-
-<%= link_to "New store", new_store_path %>

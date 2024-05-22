@@ -1,13 +1,20 @@
 <div id="<%= dom_id store %>">
-  <p>
-    <strong>Name:</strong>
-    <%= store.name %>
-  </p>
-
+  <h2>Dados da loja</h2>
+  
   <% if store.image.attached? %>
     <%= link_to image_tag(store.image.variant(:thumb)), store.image %>
   <% else %>
     <p>Imagem não disponível</p>
   <% end %>
+
+  <p>
+    <strong>Nome:</strong>
+    <%= store.name %>
+  </p>
+
+  <p>
+    <strong>Usuário:</strong>
+    <%= store.user.email %>
+  </p>
 
 </div>
