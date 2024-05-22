@@ -13,3 +13,44 @@
  *= require_tree .
  *= require_self
  */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+* {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+}
+
+hr {
+  margin: 1rem 0
+}
+
+.stores-list {
+  display: inline-block;
+    max-width: 24rem;
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
+}
+
+.link-button {
+  display: inline-block;
+  color: white;
+    background-color: #1d4ed8;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    margin-right: 0.5rem;
+    margin-bottom: 1rem;
+    border: none;
+    cursor: pointer;
+}
+
+
+.corner-space {
+  padding-left: 1rem;
+  
+}
