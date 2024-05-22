@@ -8,14 +8,20 @@ class StoresController < ApplicationController
   # GET /stores or /stores.json
   def index
     if current_user.admin?
-      @stores = Store.includes([image_attachment: :blob])
+      @stores = Store.includes([:user])
+      @stores_by_user = Store.includes([:user]).all.group_by(&:user)
     else
-      @stores = Store.where(user: current_user).includes([image_attachment: :blob])
+      @stores = Store.where(user: current_user)
     end
   end
 
   # GET /stores/1 or /stores/1.json
   def show
+    if current_user.admin?
+      @stores = Store.includes([image_attachment: :blob])
+    else
+      @stores = Store.where(user: current_user).includes([image_attachment: :blob])
+    end
   end
 
   # GET /stores/new
