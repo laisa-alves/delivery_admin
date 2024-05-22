@@ -1,27 +1,29 @@
-<h1>Deliver me admin</h1>
+<div class="corner-space">
+  <h1>Deliver me admin</h1>
 
-<p style="color: green"><%= notice %></p>
+  <p style="color: green"><%= notice %></p>
 
-<% if current_user %>
-  <p>Logged in como: <strong><%= current_user.email %></strong></p>
-  <p>Papel: <%= current_user.role %></p>
-  <%= button_to "Sign out", destroy_user_session_path, method: :delete %>
+  <% if current_user %>
+    <p>Logado como: <strong><%= current_user.email %></strong></p>
+    <p>Papel: <%= current_user.role %></p>
+    <%= button_to "Sign out", destroy_user_session_path, method: :delete %>
 
-  <hr>
+    <hr>
 
-  <% if current_user.admin? %>
-    <div style="display:flex; flex-direction: column; gap:10px">
-      <%= link_to "Gerenciamento de lojas", stores_path%>
-      <%= link_to "Gerenciamento de usuários", stores_path%>
-      <%= link_to "Gerenciamento de pedidos", stores_path%>
-    </div>
-    
-    
-    <p>List all products: <%=link_to "Listing", listing_path%></p>
+    <% if current_user.admin? %>
+      <div style="display:flex; flex-direction: column; gap:10px">
+        <%= link_to "Gerenciamento de lojas", stores_path%>
+        <%= link_to "Gerenciamento de usuários", stores_path%>
+        <%= link_to "Gerenciamento de pedidos", stores_path%>
+      </div>
+      
+      
+      <p>List all products: <%=link_to "Listing", listing_path%></p>
+    <% end %>
+
+  <% else %>
+    <%= link_to "Sign in", new_user_session_path %>
+    ou
+    <%= link_to "Sign up", new_user_registration_path %>
   <% end %>
-
-<% else %>
-  <%= link_to "Sign in", new_user_session_path %>
-  ou
-  <%= link_to "Sign up", new_user_registration_path %>
-<% end %>
+</div>
