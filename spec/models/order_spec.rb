@@ -1,6 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe Order, type: :model do
+  describe 'associations' do
+    it { should belong_to(:buyer).class_name('User').required }
+    it { should belong_to(:store) }
+    it { should have_many(:order_items) }
+    it { should have_many(:products).through(:order_items) }
+  end
+
+
   let(:buyer) do
     buyer = User.create!(
       email: 'buyer@email.com',
@@ -48,12 +56,12 @@ RSpec.describe Order, type: :model do
       expect(order.state).to eq 'created'
     end
 
-    it "transitions to 'accepted' state when accepted" do
+    it "transitions from 'created' to 'accepted'" do
       order.accept
       expect(order.state).to eq 'accepted'
     end
 
-    it "dosen't transition to 'accepted' state if not in 'created' state" do
+    it "doesn't transition to 'accepted' if not in 'created' state" do
       order = Order.create(buyer:, store:, state: :accepted)
       expect { order.accept! }.to raise_error(StateMachines::InvalidTransition)
     end
