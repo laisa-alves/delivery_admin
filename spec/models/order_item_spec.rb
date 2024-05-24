@@ -1,6 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe OrderItem, type: :model do
+  describe 'associations' do
+    it { should belong_to(:order).required }
+    it { should belong_to(:product).required }
+  end
+
   let(:buyer) do
     buyer = User.create!(
       email: 'buyer@email.com',

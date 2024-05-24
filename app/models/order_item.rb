@@ -6,7 +6,7 @@ class OrderItem < ApplicationRecord
 
   private
   def store_product
-    if product.store != order.store
+    if product && order && product.store != order.store
       errors.add(:product, "should belong to `Store`: #{order.store.name}")
     end
   end
