@@ -2,19 +2,23 @@ class ProductsController < ApplicationController
   skip_forgery_protection only: %i[create update destroy]
   before_action :authenticate!
   before_action :set_store
-  before_action :set_products, only: %i[ show edit update destroy ]
+  before_action :set_products, only: %i[show edit update destroy]
   rescue_from User::InvalidToken, with: :not_authorized
 
   # GET /stores/:store_id/products
   def index
-    @products = @store.products
+    respond_to do |format|
+      format.json do
+        @products = @store.products
+      end
+    end
   end
 
   # GET /stores/:store_id/products/:id
   def show
     respond_to do |format|
       format.html
-      format.json { render json: @product}
+      format.json { render json: @product }
     end
   end
 
@@ -24,8 +28,7 @@ class ProductsController < ApplicationController
   end
 
   # GET /stores/:store_id/products/:id/edit
-  def edit
-  end
+  def edit; end
 
   # POST /stores/:store_id/products
   def create
@@ -33,14 +36,13 @@ class ProductsController < ApplicationController
 
     respond_to do |format|
       if @store.save
-        format.html {redirect_to store_products_url(@store, @product), notice: "Product was successfully created."}
-        format.json { render json: @product, status: :created, location: [@store, @product]}
+        format.html { redirect_to store_products_url(@store, @product), notice: 'Product was successfully created.' }
+        format.json { render json: @product, status: :created, location: [@store, @product] }
       else
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @product.errors, status: :unprocessable_entity }
       end
     end
-
   end
 
   # PATCH/PUT /stores/:store_id/products/:id
@@ -62,14 +64,12 @@ class ProductsController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to store_products_url(@store), notice: 'Product was successfully destroyed.' }
-      format.json { render json: { message: "Your product has benn deleted", product: @product} }
+      format.json { render json: { message: 'Your product has benn deleted', product: @product } }
     end
   end
 
   def listing
-    if !current_user.admin?
-      redirect_to root_path, notice: "No permission for you"
-    end
+    redirect_to root_path, notice: 'No permission for you' unless current_user.admin?
 
     @products = Product.includes(:store)
   end
@@ -87,6 +87,4 @@ class ProductsController < ApplicationController
   def product_params
     params.require(:product).permit(:title, :price, :description, :image)
   end
-
-
 end

@@ -25,6 +25,10 @@ class ApplicationController < ActionController::Base
 
   private
 
+  def is_buyer?
+    (current_user && current_user.buyer?) && current_credential.buyer?
+  end
+
   # Método para filtrar apenas buyers
   def only_buyers!
     is_buyer = (current_user && current_user.buyer?) && current_credential.buyer?
