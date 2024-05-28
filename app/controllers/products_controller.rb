@@ -36,7 +36,7 @@ class ProductsController < ApplicationController
 
     respond_to do |format|
       if @store.save
-        format.html { redirect_to store_products_url(@store, @product), notice: 'Product was successfully created.' }
+        format.html { redirect_to store_url(@store), notice: 'Produto criado com sucesso.' }
         format.json { render json: @product, status: :created, location: [@store, @product] }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -49,7 +49,7 @@ class ProductsController < ApplicationController
   def update
     respond_to do |format|
       if @product.update(product_params)
-        format.html { redirect_to store_products_url(@store, @product), notice: 'Product was successfully updated.' }
+        format.html { redirect_to store_url(@store), notice: 'Produto atualizado com sucesso.' }
         format.json { render json: @product, status: :ok, location: [@store, @product] }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -63,8 +63,8 @@ class ProductsController < ApplicationController
     @product.destroy!
 
     respond_to do |format|
-      format.html { redirect_to store_products_url(@store), notice: 'Product was successfully destroyed.' }
-      format.json { render json: { message: 'Your product has benn deleted', product: @product } }
+      format.html { redirect_to store_url(@store), notice: 'Product was successfully destroyed.' }
+      format.json { render json: { message: 'Your product has been deleted', product: @product } }
     end
   end
 
