@@ -5,8 +5,9 @@
 
   <h1>Lojas cadastradas</h1>
 
-  <div>
-  <%= link_to "Criar loja", new_store_path, class: "link-button" %>
+  <div style="display: flex">
+    <%= link_to "Criar loja", new_store_path, class: "link-button" %>
+    <%= link_to "Gerenciar lojas excluídas", discarded_stores_path, class: "link-button", style: "background: #E53935" %>
   </div>
 
   <div id="stores">

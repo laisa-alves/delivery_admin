@@ -1,0 +1,55 @@
+<div class="corner-space">
+  <h1>Lojas Excluídas</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Usuário</th>
+        <th>Nome</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @stores_by_user.each do |user, stores| %>
+        <tr>
+          <td rowspan="<%= stores.size %>"><%= user.email %></td>
+          <td><%= stores.first.name %></td>
+
+          <td>
+            <%= button_to 'Restaurar', restore_store_path(stores.first), method: :patch, data: { confirm: 'Tem certeza que deseja restaurar esta loja?' } %>
+          </td>
+        </tr>
+
+        <% stores.drop(1).each do |store| %>
+          <tr>
+            <td><%= store.name %></td>
+            <td>
+            <%= button_to 'Restaurar', restore_store_path(store), method: :patch, data: { confirm: 'Tem certeza que deseja restaurar esta loja?' } %>
+            </td>
+          </tr>
+        <% end %>
+
+      <% end %>
+    </tbody>
+  </table>
+
+  <%= link_to 'Voltar para lojas', stores_path %>
+</div>
+
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  th {
+    background-color: #f2f2f2;
+    text-align: left;
+  }
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+</style>
