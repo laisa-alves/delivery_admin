@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  include Discard::Model
+
   class InvalidToken < StandardError; end
 
   enum :role, [:admin, :seller, :buyer]
