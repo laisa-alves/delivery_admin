@@ -7,11 +7,7 @@ class ProductsController < ApplicationController
 
   # GET /stores/:store_id/products
   def index
-    respond_to do |format|
-      format.json do
-        @products = @store.products
-      end
-    end
+    @products = @store.products.kept
   end
 
   # GET /stores/:store_id/products/:id
@@ -60,7 +56,7 @@ class ProductsController < ApplicationController
 
   # DELETE /stores/:store_id/products/:id
   def destroy
-    @product.destroy!
+    @product.discard
 
     respond_to do |format|
       format.html { redirect_to store_url(@store), notice: 'Product was successfully destroyed.' }
@@ -81,7 +77,7 @@ class ProductsController < ApplicationController
   end
 
   def set_products
-    @product = @store.products.find(params[:id])
+    @product = @store.products.kept.find(params[:id])
   end
 
   def product_params
