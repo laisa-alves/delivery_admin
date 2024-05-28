@@ -1,4 +1,6 @@
 class Store < ApplicationRecord
+  include Discard::Model
+
   belongs_to :user
   has_many :products
   before_validation :ensure_seller

@@ -8,10 +8,10 @@ class StoresController < ApplicationController
   # GET /stores or /stores.json
   def index
     if current_user.admin?
-      @stores = Store.includes([:user])
-      @stores_by_user = Store.includes([:user]).all.group_by(&:user)
+      @stores = Store.kept.includes([:user])
+      @stores_by_user = Store.kept.includes([:user]).all.group_by(&:user)
     else
-      @stores = Store.where(user: current_user)
+      @stores = Store.kept.where(user: current_user)
     end
   end
 
@@ -72,11 +72,11 @@ class StoresController < ApplicationController
 
   # DELETE /stores/1 or /stores/1.json
   def destroy
-    @store.destroy!
+    @store.discard
 
     respond_to do |format|
-      format.html { redirect_to stores_url, notice: "Store was successfully destroyed." }
-      format.json { head :no_content }
+      format.html { redirect_to stores_url, notice: "Store was successfully removed." }
+      format.json { render json: { message: 'Your store has been deleted' } }
     end
   end
 
