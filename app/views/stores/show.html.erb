@@ -16,7 +16,7 @@
 
   <h2>Produtos</h2>
   <div style="margin-top: 20px">
-    <%= link_to 'Adicionar produto', new_store_product_path(@store), class: "button" %>
+    <%= link_to 'Adicionar produto', new_store_product_path(@store), class: "link-button" %>
   </div>
 
   <div>
@@ -27,8 +27,9 @@
         <h3><%= product.description %></h3>
 
         <div style="display: flex; gap: 10px;">
+          <%= link_to 'Visualizar', store_product_path(@store, product), class: "button" %>
           <%= link_to 'Editar', edit_store_product_path(@store, product), class: "button" %>
-          <%= link_to 'Excluir', store_product_path(@store, product), method: :delete, data: { confirm: 'Tem certeza que deseja excluir?' } %>
+         
         </div>
 
       </div>

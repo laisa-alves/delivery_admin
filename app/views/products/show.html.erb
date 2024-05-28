@@ -1,0 +1,36 @@
+<div class="corner-space">
+  <h1>Dados do produto</h1>
+
+  <% if @product.image.attached? %>
+    <%= link_to image_tag(@product.image.variant(:thumb)), @product.image %>
+  <% else %>
+    <p>Imagem não disponível</p>
+  <% end %>
+
+  <p>
+    <strong>Título:</strong>
+    <%= @product.title %>
+  </p>
+
+  <p>
+    <strong>Preço:</strong>
+    <%= number_to_currency(@product.price) %>
+  </p>
+
+  <p>
+    <strong>Descrição:</strong>
+    <%= @product.description %>
+  </p>
+
+  
+  <div style="display: flex; gap: 10px;">
+    <%= link_to 'Editar', edit_store_product_path(@store, @product), class: "button" %>
+    
+    <%= button_to 'Excluir', store_product_path(@store, @product), method: :delete, form: { data: { confirm: 'Tem certeza que deseja excluir?' } }  %>
+  </div>
+
+  <div>
+    <%= link_to "Voltar para loja", store_path(@store.id) %>
+  </div>
+
+</div>
