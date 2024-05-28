@@ -26,7 +26,7 @@
   <div style="display: flex; gap: 10px;">
     <%= link_to 'Editar', edit_store_product_path(@store, @product), class: "button" %>
     
-    <%= button_to 'Excluir', store_product_path(@store, @product), method: :delete, form: { data: { confirm: 'Tem certeza que deseja excluir?' } }  %>
+    <%= button_to 'Excluir', store_product_path(@store, @product), method: :delete, form: { data: { turbo_confirm: 'Tem certeza que deseja excluir?' } }  %>
   </div>
 
   <div>
