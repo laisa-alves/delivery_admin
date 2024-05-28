@@ -1,8 +1,17 @@
 Rails.application.routes.draw do
   devise_for :users
-  
+
   resources :stores do
     resources :products
+
+    collection do
+      get 'discarded'
+    end
+
+    member do
+      patch 'restore'
+    end
+
   end
 
   get "listing" => "products#listing"

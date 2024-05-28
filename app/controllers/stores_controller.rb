@@ -1,7 +1,7 @@
 class StoresController < ApplicationController
   skip_forgery_protection only: %i[create update destroy]
   before_action :authenticate!
-  before_action :set_store, only: %i[ show edit update destroy ]
+  before_action :set_store, only: %i[ show edit update destroy restore ]
   rescue_from User::InvalidToken, with: :not_authorized
 
 
@@ -78,6 +78,20 @@ class StoresController < ApplicationController
       format.html { redirect_to stores_url, notice: "Store was successfully removed." }
       format.json { render json: { message: 'Your store has been deleted' } }
     end
+  end
+
+  def discarded
+    if current_user.admin?
+      @stores = Store.discarded.includes([:user])
+      @stores_by_user = Store.discarded.includes([:user]).all.group_by(&:user)
+    else
+      @stores = Store.discarded.where(user: current_user)
+    end
+  end
+
+  def restore
+    @store.undiscard!
+    redirect_to stores_path, notice: 'Loja restaurada com sucesso'
   end
 
   private
