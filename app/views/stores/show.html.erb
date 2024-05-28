@@ -9,9 +9,31 @@
       <%= link_to "Voltar para lojas", stores_path %>
     </div>
 
-    <%= button_to "Excluir loja", @store, method: :delete %>
+    <%= button_to "Excluir loja", @store, method: :delete, data: { confirm: "Tem certeza que deseja excluir?" }%>
   </div>
 
   <hr>
+
+  <h2>Produtos</h2>
+  <div style="margin-top: 20px">
+    <%= link_to 'Adicionar produto', new_store_product_path(@store), class: "button" %>
+  </div>
+
+  <div>
+    <% @store.products.each do |product| %>
+      <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+        <h3><%= product.title %></h3>
+        <h3>Preço: <%= number_to_currency(product.price) %></h3>
+        <h3><%= product.description %></h3>
+
+        <div style="display: flex; gap: 10px;">
+          <%= link_to 'Editar', edit_store_product_path(@store, product), class: "button" %>
+          <%= link_to 'Excluir', store_product_path(@store, product), method: :delete, data: { confirm: 'Tem certeza que deseja excluir?' } %>
+        </div>
+
+      </div>
+
+    <% end %>
+  </div>
 
 </div>

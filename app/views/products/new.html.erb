@@ -1,0 +1,12 @@
+<div class="corner-space">
+  <h1>Novo produto</h1>
+
+  <%= render "form", product: @product %>
+
+  <br>
+
+  <div>
+    <%= link_to "Voltar para loja", store_path(@store.id) %>
+  </div>
+
+</div>
