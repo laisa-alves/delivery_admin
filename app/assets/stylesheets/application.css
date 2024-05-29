@@ -34,7 +34,7 @@ hr {
     margin-bottom: 1rem;
 }
 
-.link-button {
+.link-button, button {
   display: inline-block;
   color: white;
     background-color: #1d4ed8;
@@ -49,8 +49,74 @@ hr {
     cursor: pointer;
 }
 
+.delete-button {
+  background: #ff4c4c;
+}
+
+.delete-button:hover {
+  background-color: #ff0000;
+}
 
 .corner-space {
   padding-left: 1rem;
   
+}
+
+.styled-form {
+  max-width: 600px;
+  margin: 20px 0;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.styled-form div {
+  margin-bottom: 15px;
+}
+
+.styled-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.styled-form input[type="text"],
+.styled-form input[type="email"],
+.styled-form input[type="password"],
+.styled-form select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+.styled-form input[type="submit"],
+.styled-form button[type="submit"] {
+  background-color: #1d4ed8;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.styled-form input[type="submit"]:hover,
+.styled-form button[type="submit"]:hover {
+  background-color: #1944ba;
+}
+
+.styled-form a {
+  display: inline-block;
+  margin-top: 10px;
+  color: #007BFF;
+  text-decoration: none;
+}
+
+.styled-form a:hover {
+  text-decoration: underline;
 }
