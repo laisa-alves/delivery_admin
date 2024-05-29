@@ -1,7 +1,12 @@
 Rails.application.routes.draw do
   devise_for :users
 
-  resources :users, only: [:index, :destroy]
+  resources :users, only: [:index, :destroy] do
+    collection do
+      get 'admin_new', to: 'users#admin_new'
+      post 'admin_create', to: 'users#admin_create'
+    end
+  end
 
   resources :stores do
     resources :products
