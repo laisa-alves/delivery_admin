@@ -1,12 +1,20 @@
 <div class="corner-space">
-  <h1>Usuários ativos</h1>
+  <%= link_to "Página inicial", root_path %>
 
   <p style="color: green"><%= notice %></p>
+
+  <h1>Usuários ativos</h1>
+
+  <div style="display: flex">
+    <%= link_to "Criar usuário", admin_new_users_path, class: "link-button" %>
+    <%= link_to "Gerenciar usuários excluídos", discarded_stores_path, class: "link-button", style: "background: #E53935" %>
+  </div>
   
   <table>
     <thead>
       <tr>
         <th>Email</th>
+        <th>Papel</th>
         <th>Ações</th>
       </tr>
     </thead>
@@ -14,8 +22,9 @@
       <% @users.each do |user| %>
         <tr>
           <td><%= user.email %></td>
+          <td><%= user.role %></td>
           <td>
-            <%= button_to 'Excluir', user_path(user), method: :delete, form: { data: { turbo_confirm: 'Tem certeza que deseja excluir o usuário?' } } %>
+            <%= button_to 'Excluir', user_path(user), method: :delete, class: 'delete-button' , form: { data: { turbo_confirm: 'Tem certeza que deseja excluir o usuário?' } } %>
           </td>
         </tr>
       <% end %>
@@ -23,3 +32,21 @@
   </table>
 
 </div>
+
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  th {
+    background-color: #f2f2f2;
+    text-align: left;
+  }
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+</style>
