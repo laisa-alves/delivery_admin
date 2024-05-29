@@ -1,0 +1,46 @@
+
+<div class="corner-space">
+  <h1>Usuários Descartados</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Papel</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr>
+          <td><%= user.email %></td>
+          <td><%= user.role %></td>
+          <td>
+            <%= button_to 'Reativar', restore_user_path(user), method: :patch, data: { confirm: 'Tem certeza que deseja reativar este usuário?' }, class: 'button' %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <%= link_to 'Voltar', users_path, class: 'button' %>
+</div>
+
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  th {
+    background-color: #f2f2f2;
+    text-align: left;
+  }
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+</style>

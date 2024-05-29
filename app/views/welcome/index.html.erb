@@ -2,6 +2,7 @@
   <h1>Deliver me admin</h1>
 
   <p style="color: green"><%= notice %></p>
+  <p style="color: red"><%= alert %></p>
 
   <% if current_user %>
     <p>Logado como: <strong><%= current_user.email %></strong></p>
@@ -23,7 +24,5 @@
 
   <% else %>
     <%= link_to "Sign in", new_user_session_path %>
-    ou
-    <%= link_to "Sign up", new_user_registration_path %>
   <% end %>
 </div>

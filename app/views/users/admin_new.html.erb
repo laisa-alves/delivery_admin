@@ -32,7 +32,7 @@
 
     <div>
       <%= form.label :role, 'Papel' %>
-      <%= form.select :role, User.roles.keys.map { |role| [role.humanize, role] } %>
+      <%= form.select :role, User.roles.keys.map { |role| [role.humanize, role] }, prompt: 'Selecione um papel' %>
     </div>
     
     <div>
