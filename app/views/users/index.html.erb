@@ -1,0 +1,25 @@
+<div class="corner-space">
+  <h1>Usuários ativos</h1>
+
+  <p style="color: green"><%= notice %></p>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr>
+          <td><%= user.email %></td>
+          <td>
+            <%= button_to 'Excluir', user_path(user), method: :delete, form: { data: { turbo_confirm: 'Tem certeza que deseja excluir o usuário?' } } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+</div>
