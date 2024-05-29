@@ -2,7 +2,7 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
   before_action :authenticate_admin!
-  before_action :set_user, only: [:destroy]
+  before_action :set_user, only: [:destroy, :restore]
 
   # GET /users
   def index
@@ -31,6 +31,15 @@ class UsersController < ApplicationController
       format.html { redirect_to users_path, notice: 'Usuário excluído com sucesso.' }
       format.json { head :no_content }
     end
+  end
+
+  def discarded
+    @users = User.discarded
+  end
+
+  def restore
+    @user.undiscard!
+    redirect_to users_path, notice: "Usuário reativado com sucesso."
   end
 
   private

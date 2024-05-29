@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
       check_token!
     else
       authenticate_user!
+      check_user_discarded if user_signed_in?
     end
   end
 
@@ -46,4 +47,14 @@ class ApplicationController < ActionController::Base
       render json: {message: "Not authorized"}, status: 401
     end
   end
+
+  def check_user_discarded
+    if user_signed_in? && current_user.discarded?
+      sign_out current_user
+      flash[:alert] = "Sua conta foi desativada. Entre em contato com o suporte para obter mais informações."
+      redirect_to root_path
+    end
+  end
+
+
 end

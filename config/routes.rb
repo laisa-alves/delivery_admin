@@ -5,6 +5,11 @@ Rails.application.routes.draw do
     collection do
       get 'admin_new', to: 'users#admin_new'
       post 'admin_create', to: 'users#admin_create'
+      get 'discarded'
+    end
+
+    member do
+      patch 'restore'
     end
   end
 
