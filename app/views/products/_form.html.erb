@@ -1,4 +1,4 @@
-<%= form_with(model: [@store, @product], local: true) do |form| %>
+<%= form_with(model: [@store, @product], local: true, html: { class: 'styled-form' }) do |form| %>
   <% if product.errors.any? %>
     <div style="color: red">
       <h2><%= pluralize(product.errors.count, "error") %> prohibited this store from being saved:</h2>

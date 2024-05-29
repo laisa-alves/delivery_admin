@@ -9,7 +9,7 @@
       <%= link_to "Voltar para lojas", stores_path %>
     </div>
 
-    <%= button_to "Excluir loja", @store, method: :delete, form: { data: { turbo_confirm: "Tem certeza que deseja excluir?" } }%>
+    <%= button_to "Excluir loja", @store, method: :delete, class: 'delete-button', form: { data: { turbo_confirm: "Tem certeza que deseja excluir?" } }%>
   </div>
 
   <hr>
