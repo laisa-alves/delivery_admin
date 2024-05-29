@@ -1,0 +1,45 @@
+<div class="corner-space">
+  <h1>Criar Novo Usuário</h1>
+
+  <%= form_with(model: @user, url: admin_create_users_path, local: true, html: { class: 'styled-form' }) do |form| %>
+    <% if @user.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being created:</h2>
+
+      <ul>
+        <% @user.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+
+    <div>
+      <%= form.label :email %>
+      <%= form.email_field :email %>
+    </div>
+    
+    <div>
+      <%= form.label :password, 'Senha' %>
+      <%= form.password_field :password %>
+    </div>
+    
+    <div>
+      <%= form.label :password_confirmation, 'Confirme a senha' %>
+      <%= form.password_field :password_confirmation %>
+    </div>
+
+    <div>
+      <%= form.label :role, 'Papel' %>
+      <%= form.select :role, User.roles.keys.map { |role| [role.humanize, role] } %>
+    </div>
+    
+    <div>
+      <%= form.submit 'Criar Usuário' %>
+    </div>
+  <% end %>
+
+  <%= link_to 'Voltar', users_path %>
+
+</div>
