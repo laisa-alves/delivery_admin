@@ -75,8 +75,8 @@ class StoresController < ApplicationController
     @store.discard
 
     respond_to do |format|
-      format.html { redirect_to stores_url, notice: "Store was successfully removed." }
-      format.json { render json: { message: 'Your store has been deleted' } }
+      format.html { redirect_to stores_url, notice: "Loja removida com sucesso." }
+      format.json { render json: { message: "Loja removida com sucesso." } }
     end
   end
 
