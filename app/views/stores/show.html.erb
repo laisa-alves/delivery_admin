@@ -25,6 +25,7 @@
         <h3><%= product.title %></h3>
         <h3>Preço: <%= number_to_currency(product.price) %></h3>
         <h3><%= product.description %></h3>
+        <p>Status: <%= product.active ? 'Ativo' : 'Desativado' %></p>
 
         <div style="display: flex; gap: 10px;">
           <%= link_to 'Visualizar', store_product_path(@store, product), class: "button" %>

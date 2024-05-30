@@ -22,6 +22,19 @@
     <%= @product.description %>
   </p>
 
+  <div style="display: flex; gap: 10px; align-items: center">
+    <p>
+      <strong>Status: </strong>
+      <%= @product.active ? 'Ativo' : 'Desativado' %>
+    </p>
+
+    <% if @product.active %>
+      <%= button_to 'Desativar produto', toggle_active_store_product_path(@store, @product), method: :patch %>
+    <% else %>
+      <%= button_to 'Ativar produto', toggle_active_store_product_path(@store, @product), method: :patch %>
+    <% end %>
+  </div>
+
   
   <div style="display: flex; gap: 10px;">
     <%= link_to 'Editar', edit_store_product_path(@store, @product), class: "button" %>
