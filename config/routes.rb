@@ -22,6 +22,7 @@ Rails.application.routes.draw do
 
     member do
       patch 'restore'
+      patch 'toggle_active'
     end
 
   end
