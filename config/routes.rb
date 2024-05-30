@@ -14,7 +14,11 @@ Rails.application.routes.draw do
   end
 
   resources :stores do
-    resources :products
+    resources :products do
+      member do
+        patch 'toggle_active'
+      end
+    end
 
     collection do
       get 'discarded'

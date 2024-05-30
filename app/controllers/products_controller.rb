@@ -2,7 +2,7 @@ class ProductsController < ApplicationController
   skip_forgery_protection only: %i[create update destroy]
   before_action :authenticate!
   before_action :set_store
-  before_action :set_products, only: %i[show edit update destroy]
+  before_action :set_products, only: %i[show edit update destroy toggle_active]
   rescue_from User::InvalidToken, with: :not_authorized
 
   # GET /stores/:store_id/products
@@ -68,6 +68,13 @@ class ProductsController < ApplicationController
     redirect_to root_path, notice: 'No permission for you' unless current_user.admin?
 
     @products = Product.includes(:store)
+  end
+
+  def toggle_active
+    puts @product
+    @product.update(active: !@product.active)
+    messase = @product.active ? 'Produto ativado com sucesso.' : 'Produto desativado com sucesso.'
+    redirect_to store_path(@store), notice: messase
   end
 
   private
