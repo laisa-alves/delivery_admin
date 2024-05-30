@@ -7,7 +7,18 @@ class ProductsController < ApplicationController
 
   # GET /stores/:store_id/products
   def index
-    @products = @store.products.kept
+    # @products = @store.products.kept
+
+    respond_to do |format|
+      format.json do
+        if is_buyer?
+          page = params.fetch(:page, 1)
+
+          @products = Product.kept.where(store_id: params[:store_id]).order(:title).page(page)
+        end
+      end
+    end
+
   end
 
   # GET /stores/:store_id/products/:id
