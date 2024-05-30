@@ -17,4 +17,17 @@
     <%= store.user.email %>
   </p>
 
+  <div style="display: flex; gap: 10px; align-items: center">
+    <p>
+      <strong>Status: </strong>
+      <%= store.active ? 'Ativa' : 'Desativada' %>
+    </p>
+
+    <% if store.active %>
+      <%= button_to 'Desativar loja', toggle_active_store_path(store), method: :patch %>
+    <% else %>
+      <%= button_to 'Ativar loja', toggle_active_store_path(store), method: :patch %>
+    <% end %>
+  </div>
+    
 </div>
