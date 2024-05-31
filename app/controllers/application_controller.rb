@@ -27,7 +27,7 @@ class ApplicationController < ActionController::Base
   private
 
   def is_buyer?
-    (current_user && current_user.buyer?) && current_credential.buyer?
+    current_credential && current_credential.buyer?
   end
 
   # Método para filtrar apenas buyers
@@ -36,6 +36,13 @@ class ApplicationController < ActionController::Base
 
     if !is_buyer
       render json: {message: "Not authorized"}, status: 401
+    end
+  end
+
+  # Restrict buyer access
+  def restrict_buyer_access
+    if current_user&.buyer? || is_buyer?
+      render json: {error: 'Not authorized'}, status: 401
     end
   end
 
