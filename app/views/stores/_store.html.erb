@@ -17,6 +17,11 @@
     <%= store.user.email %>
   </p>
 
+  <p>
+    <strong>Categoria:</strong>
+    <%= I18n.t("categories.#{store.category}") %>
+  </p>
+
   <div style="display: flex; gap: 10px; align-items: center">
     <p>
       <strong>Status: </strong>

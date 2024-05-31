@@ -22,6 +22,12 @@
     <%= form.file_field :image %>
   </div>
 
+  <div style="margin-bottom: 1rem">
+    <%= form.label :category, 'Categoria', style: "display: block" %>
+    <%= form.select :category, Store.categories.map { |key, _value| [I18n.t("categories.#{key}"), key] }, prompt: "Selecione uma categoria" %>
+
+  </div>
+
   <br />
 
   <% if current_user.admin? && store.user_id.nil? %>
