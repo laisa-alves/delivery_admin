@@ -15,6 +15,10 @@ Rails.application.routes.draw do
 
   resources :stores do
     resources :products do
+      collection do
+        get 'public', to: 'products#public_index'
+      end
+
       member do
         patch 'toggle_active'
       end

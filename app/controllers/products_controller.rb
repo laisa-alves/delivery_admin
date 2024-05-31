@@ -1,32 +1,30 @@
 class ProductsController < ApplicationController
   skip_forgery_protection only: %i[create update destroy]
-  before_action :authenticate!
+  before_action :authenticate!, except: [:public_index]
+  before_action :restrict_buyer_access, except: [:public_index]
   before_action :set_store
   before_action :set_products, only: %i[show edit update destroy toggle_active]
   rescue_from User::InvalidToken, with: :not_authorized
 
   # GET /stores/:store_id/products
   def index
-    # @products = @store.products.kept
-
-    respond_to do |format|
-      format.json do
-        if is_buyer?
-          page = params.fetch(:page, 1)
-
-          @products = Product.kept.where(store_id: params[:store_id]).order(:title).page(page)
-        end
-      end
+    if current_user.seller? || current_user.admin?
+      page = params.fetch(:page, 1)
+      @products = Product.kept.where(store_id: params[:store_id]).order(:title).page(page)
     end
+  end
 
+  def public_index
+    if is_buyer?
+      page = params.fetch(:page, 1)
+      @products = Product.kept.where(active: true, store_id: params[:store_id]).order(:title).page(page)
+    else
+      render json: { error: 'Unauthorized' }, status: :unauthorized
+    end
   end
 
   # GET /stores/:store_id/products/:id
   def show
-    respond_to do |format|
-      format.html
-      format.json { render json: @product }
-    end
   end
 
   # GET /stores/:store_id/products/new
