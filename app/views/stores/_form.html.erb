@@ -28,6 +28,13 @@
 
   </div>
 
+  <div style="margin-bottom: 1rem">
+    <%= form.label :description, 'Descrição', style: "display: block" %>
+    <%= form.text_area :description %>
+
+  </div>
+
+
   <br />
 
   <% if current_user.admin? && store.user_id.nil? %>
