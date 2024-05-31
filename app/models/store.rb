@@ -6,8 +6,10 @@ class Store < ApplicationRecord
   belongs_to :user
   has_many :products
   before_validation :ensure_seller
+
   validates :name, presence: true, length: {minimum: 3}
   validates :category, presence: true
+  validates :description, length: { maximum: 200 }
 
   has_one_attached :image do |attachable|
     attachable.variant :thumb, resize_to_limit: [100, 100]
