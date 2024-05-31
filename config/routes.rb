@@ -26,6 +26,7 @@ Rails.application.routes.draw do
 
     collection do
       get 'discarded'
+      get 'public', to: 'stores#public_index'
     end
 
     member do

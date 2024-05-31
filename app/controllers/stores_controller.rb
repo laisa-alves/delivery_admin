@@ -1,7 +1,8 @@
 class StoresController < ApplicationController
   skip_forgery_protection only: %i[create update destroy]
-  before_action :authenticate!
-  before_action :only_seller_or_admins!, except: [:index]
+  before_action :authenticate!, except: [:public_index]
+  before_action :restrict_buyer_access, except: [:public_index]
+  # before_action :only_seller_or_admins!, except: [:index]
   before_action :set_store, only: %i[ show edit update destroy restore toggle_active ]
   rescue_from User::InvalidToken, with: :not_authorized
 
@@ -13,9 +14,12 @@ class StoresController < ApplicationController
       @stores_by_user = Store.kept.includes([:user]).all.group_by(&:user)
     elsif current_user.seller?
       @stores = Store.kept.where(user: current_user)
-    elsif current_user.buyer?
+    end
+  end
+
+  def public_index
+    if is_buyer?
       @stores = Store.kept.where(active: true)
-      render "stores/index_buyer", format: :json
     end
   end
 
@@ -124,14 +128,5 @@ class StoresController < ApplicationController
 
     def not_authorized(e)
       render json: {message: "Nope!"}, status:401
-    end
-
-    def only_seller_or_admins!
-      unless current_user.seller? || current_user.admin?
-        respond_to do |format|
-          format.html { redirect_to root_path, alert: "Você não tem permissão para acessar essa página."}
-          format.json { render json: {message: "Você não tem permissão."}, status: :unauthorized }
-        end
-      end
     end
 end
