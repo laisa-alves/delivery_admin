@@ -120,9 +120,9 @@ class StoresController < ApplicationController
 
       # Se usuário é admin permite enviar o campo de usuário (dono da loja) além do nome
       if current_user.admin?
-        required.permit(:name, :user_id, :image)
+        required.permit(:name, :user_id, :image, :category)
       else
-        required.permit(:name, :image)
+        required.permit(:name, :image, :category)
       end
     end
 
