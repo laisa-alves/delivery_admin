@@ -19,7 +19,7 @@
 
   <p>
     <strong>Descrição:</strong>
-    <%= @product.category.humanize %>
+    <%= I18n.t("categories.product.#{@product.category}") %>
   </p>
 
   <p>
