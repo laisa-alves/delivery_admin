@@ -32,12 +32,14 @@ store_categories = Store.categories.keys
 end
 
 # Create products for the stores
+product_categories = Product.categories.keys
 ["Scotch Eggs", "Chicken Parm", "Carbonara", "Kebab", "Fish and Chips"].each do |dish|
   store = Store.find_by(name: "Spice Grill")
   Product.find_or_create_by!(
     title: dish,
     store: store,
     price: rand(10.0..59.99).round(2),
+    category: product_categories.sample,
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
   )
 end
@@ -48,6 +50,7 @@ end
     title: dish,
     store: store,
     price: rand(10.0..59.99).round(2),
+    category: product_categories.sample,
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
   )
 end
