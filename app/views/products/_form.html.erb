@@ -30,6 +30,11 @@
 
   <div>
     <%= form.label :description, 'Descrição' %>
+    <%= form.select :category, Product.categories.keys.map { |category| category.humanize }, prompt: "Selecione uma categoria" %>
+  </div>
+
+  <div>
+    <%= form.label :description, 'Descrição' %>
     <%= form.text_area :description %>
   </div>
 
