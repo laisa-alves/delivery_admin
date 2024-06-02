@@ -12,15 +12,14 @@ RSpec.describe '/stores', type: :request do
     user
   end
 
-  # Na primeira execução do let a função é chamada e seu retorno armazenado no let. A partir disso as próximas invocações já retornam direto para o resultado da primeira execução, sem precisar resolver a função em todas as invocações.
-
+  let(:buyer_credential) { Credential.create_access(:buyer) }
   let(:credential) { Credential.create_access(:seller) }
   let(:signed_in) { api_sign_in(user, credential) }
 
   describe 'GET /index' do
     it 'renders a successful response with all the stores' do
-      store1 = Store.create!(name: 'Store 1', user:)
-      store2 = Store.create!(name: 'Store 2', user:)
+      store1 = Store.create!(name: 'Store 1', user:, category: Store.categories.keys.sample)
+      store2 = Store.create!(name: 'Store 2', user:, category: Store.categories.keys.sample)
 
       get(
         '/stores',
@@ -36,9 +35,47 @@ RSpec.describe '/stores', type: :request do
     end
   end
 
+  describe 'GET /public_index' do
+    let(:stores) { create_list(:store, 5) }
+
+    context 'when application has buyer credential' do
+      it 'renders all the stores' do
+        get(
+          '/stores/public',
+          headers: {
+            'Accept' => 'application/json',
+            'x-api-key' => buyer_credential.key
+          }
+        )
+
+        expect(response).to have_http_status(:ok)
+
+        response_data = JSON.parse(response.body)
+
+        response_data.each_with_index do |store_data, index|
+          expect(store_data['id']).to eq(stores[index].id)
+          expect(store_data['name']).to eq(stores[index].name)
+        end
+      end
+    end
+
+    context 'when application has seller credential' do
+      it 'renders an unauthorized status' do
+        get(
+          '/stores/public',
+          headers: {
+            'Accept' => 'application/json',
+            'x-api-key' => credential.key
+          }
+        )
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+  end
+
   describe 'GET /show' do
     it 'renders a successful response with one store' do
-      store = Store.create!(name: 'New Store', user:)
+      store = Store.create!(name: 'New Store', user:, category: Store.categories.keys.sample)
       get(
         "/stores/#{store.id}",
         headers: {
@@ -61,7 +98,7 @@ RSpec.describe '/stores', type: :request do
             'Accept' => 'application/json',
             'Authorization' => "Bearer #{signed_in['token']}"
           },
-          params: { store: { name: 'New Store' } }
+          params: { store: { name: 'New Store', category: Store.categories.keys.sample } }
         )
 
         expect(response).to have_http_status(:created)
@@ -85,7 +122,7 @@ RSpec.describe '/stores', type: :request do
   end
 
   describe 'PUT /update' do
-    let(:store) { Store.create!(name: 'Some Store', user:) }
+    let(:store) { Store.create!(name: 'Some Store', user:, category: Store.categories.keys.sample) }
 
     context 'with valid parameters' do
       it 'updates the store' do
@@ -95,7 +132,7 @@ RSpec.describe '/stores', type: :request do
             'Accept' => 'application/json',
             'Authorization' => "Bearer #{signed_in['token']}"
           },
-          params: { store: { name: 'New Name' } }
+          params: { store: { name: 'New Name', category: Store.categories.keys.sample } }
         )
 
         expect(response).to have_http_status(:created)
@@ -120,7 +157,7 @@ RSpec.describe '/stores', type: :request do
 
   describe 'DELETE /destroy' do
     it 'destroys the requested store' do
-      store = Store.create!(name: 'Some Store', user:)
+      store = Store.create!(name: 'Some Store', user:, category: Store.categories.keys.sample)
       expect do
         delete(
           "/stores/#{store.id}",
@@ -129,9 +166,25 @@ RSpec.describe '/stores', type: :request do
             'Authorization' => "Bearer #{signed_in['token']}"
           }
         )
-      end.to change(Store, :count).by(-1)
+      end.to change(Store.kept, :count).by(-1)
 
-      expect(response).to have_http_status(:no_content)
+      expect(JSON.parse(response.body)['message']).to eq('Loja removida com sucesso.')
+    end
+  end
+
+  describe 'PATCH #toggle_active' do
+    let(:store) { create :store }
+
+    it 'toggles the store active status' do
+      patch(
+        "/stores/#{store.id}/toggle_active",
+        headers: {
+          'Accept' => 'application/json',
+          'Authorization' => "Bearer #{signed_in['token']}"
+        }
+      )
+      response_data = JSON.parse(response.body)
+      expect(response_data['active']).to be_falsey
     end
   end
 end
