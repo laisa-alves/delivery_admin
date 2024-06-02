@@ -40,7 +40,7 @@
   <% if current_user.admin? && store.user_id.nil? %>
     <div>
       <%= form.label :seller, 'Usuário', style: "display: block" %>
-      <%= form.collection_select :user_id, @sellers, :id, :email, prompt: "Vendedores..." %>
+      <%= form.collection_select :user_id, @sellers.kept, :id, :email, prompt: "Vendedores..." %>
     </div>
   <% end %>
 
