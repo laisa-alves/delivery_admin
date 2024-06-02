@@ -68,8 +68,8 @@ class ProductsController < ApplicationController
     @product.discard
 
     respond_to do |format|
-      format.html { redirect_to store_url(@store), notice: 'Product was successfully destroyed.' }
-      format.json { render json: { message: 'Your product has been deleted', product: @product } }
+      format.html { redirect_to store_url(@store), notice: 'Produto excluído com sucesso.' }
+      format.json { render json: { message: 'Produto excluído com sucesso.', product: @product } }
     end
   end
 
