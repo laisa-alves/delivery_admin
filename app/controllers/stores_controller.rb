@@ -98,8 +98,12 @@ class StoresController < ApplicationController
   end
 
   def restore
-    @store.undiscard!
-    redirect_to stores_path, notice: 'Loja restaurada com sucesso.'
+    if @store.user.discarded?
+      redirect_to stores_path, notice: "Não é possível restaurar a loja porque o usuário está descartado"
+    else
+      @store.undiscard!
+      redirect_to stores_path, notice: 'Loja restaurada com sucesso.'
+    end
   end
 
   def toggle_active
