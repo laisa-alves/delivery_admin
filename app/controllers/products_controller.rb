@@ -1,5 +1,5 @@
 class ProductsController < ApplicationController
-  skip_forgery_protection only: %i[create update destroy]
+  skip_forgery_protection only: %i[create update destroy toggle_active]
   before_action :authenticate!, except: [:public_index]
   before_action :restrict_buyer_access, except: [:public_index]
   before_action :set_store
@@ -80,10 +80,13 @@ class ProductsController < ApplicationController
   end
 
   def toggle_active
-    puts @product
     @product.update(active: !@product.active)
-    messase = @product.active ? 'Produto ativado com sucesso.' : 'Produto desativado com sucesso.'
-    redirect_to store_path(@store), notice: messase
+    message = @product.active ? 'Produto ativado com sucesso.' : 'Produto desativado com sucesso.'
+
+    respond_to do |format|
+      format.html { redirect_to stores_path(@store), notice: message }
+      format.json { render json: { message:, active: @product.active }}
+    end
   end
 
   private
