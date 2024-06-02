@@ -11,23 +11,25 @@
   </div>
 
   <div id="stores">
-     <% @stores_by_user.each do |user, stores| %>
-      <div class="user-stores">
-        <h2><%= user.email %></h2>
+    <% if current_user.admin?%>
+      <% @stores_by_user.each do |user, stores| %>
+        <div class="user-stores">
+          <h2><%= user.email %></h2>
         
-        <% stores.each do |store| %>
-          <div class="stores-list">
-            <p>
-              <strong>Nome:</strong>
-              <%= store.name %>
-            </p>
-            <p>Status: <%= store.active ? 'Ativa' : 'Desativada' %></p>
-            <p>
-              <%= link_to "Mostrar loja", store %>
-            </p>
-          </div>
-        <% end %>
-      </div>
+          <% stores.each do |store| %>
+            <div class="stores-list">
+              <p>
+                <strong>Nome:</strong>
+                <%= store.name %>
+              </p>
+              <p>Status: <%= store.active ? 'Ativa' : 'Desativada' %></p>
+              <p>
+                <%= link_to "Mostrar loja", store %>
+              </p>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
     <% end %>
   </div>
 
