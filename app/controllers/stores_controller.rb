@@ -1,5 +1,5 @@
 class StoresController < ApplicationController
-  skip_forgery_protection only: %i[create update destroy]
+  skip_forgery_protection only: %i[create update destroy toggle_active]
   before_action :authenticate!, except: [:public_index]
   before_action :restrict_buyer_access, except: [:public_index]
   # before_action :only_seller_or_admins!, except: [:index]
@@ -20,6 +20,9 @@ class StoresController < ApplicationController
   def public_index
     if is_buyer?
       @stores = Store.kept.where(active: true)
+      render :public_index
+    else
+      render json: { message: "Nope!" }, status: :unauthorized
     end
   end
 
@@ -100,7 +103,7 @@ class StoresController < ApplicationController
   def restore
     if @store.user.discarded?
       redirect_to stores_path, notice: "Não é possível restaurar a loja porque o usuário está descartado"
-    else
+    elsif current_user.admin?
       @store.undiscard!
       redirect_to stores_path, notice: 'Loja restaurada com sucesso.'
     end
@@ -109,7 +112,12 @@ class StoresController < ApplicationController
   def toggle_active
     @store.update(active: !@store.active)
     message = @store.active ? 'Loja ativada com sucesso.' : 'Loja desativada com sucesso.'
-    redirect_to stores_path, notice: message
+
+    respond_to do |format|
+      format.html { redirect_to stores_path, notice: message }
+      format.json { render json: { message:, active: @store.active }}
+    end
+
   end
 
   private
