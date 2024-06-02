@@ -4,8 +4,10 @@ class Store < ApplicationRecord
   enum category: [:BURGER, :PIZZA, :JAPANESE, :DESSERTS, :VEGETARIAN, :BAKERY, :PASTA, :BRAZILIAN, :HEALTHY, :FAST_FOOD, :VARIETY_FOOD]
 
   belongs_to :user
-  has_many :products
+  has_many :products, dependent: :destroy
+
   before_validation :ensure_seller
+  after_discard :discard_associated_products
 
   validates :name, presence: true, length: {minimum: 3}
   validates :category, presence: true
@@ -19,5 +21,9 @@ class Store < ApplicationRecord
 
   def ensure_seller
     self.user = nil if self.user && !self.user.seller?
+  end
+
+  def discard_associated_products
+    products.discard_all
   end
 end
