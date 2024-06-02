@@ -5,11 +5,17 @@ pt-BR:
       models:
         store:
           attributes:
+            user:
+              required: "deve existir"
+            category:
+              blank: "não pode ficar em branco"
             name:
               blank: "não pode ficar em branco"
               too_short: "é muito curto (mínimo: %{count} caracteres)"
             description:
               blank: "não pode ficar em branco"
+          blank: "não pode ficar em branco"
+          required: "deve existir"
         product:
           attributes:
             title:
@@ -18,6 +24,9 @@ pt-BR:
               blank: "não pode ficar em branco"
               not_a_number: "não é um número"
       messages:
+        required: "é obrigatório(a)"
+        blank: "não pode ficar em branco"
+        not_a_number: "não é um número"
         record_invalid: 'A validação falhou: %{errors}'
         restrict_dependent_destroy:
           has_one: Não é possível excluir o registro pois existe um %{record} dependente
