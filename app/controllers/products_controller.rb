@@ -84,7 +84,7 @@ class ProductsController < ApplicationController
     message = @product.active ? 'Produto ativado com sucesso.' : 'Produto desativado com sucesso.'
 
     respond_to do |format|
-      format.html { redirect_to stores_path(@store), notice: message }
+      format.html { redirect_to store_url(@store), notice: message }
       format.json { render json: { message:, active: @product.active }}
     end
   end
