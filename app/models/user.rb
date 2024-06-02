@@ -4,8 +4,10 @@ class User < ApplicationRecord
   class InvalidToken < StandardError; end
 
   enum :role, [:admin, :seller, :buyer]
-  has_many :stores
+  has_many :stores, dependent: :destroy
   validates :role, presence: true
+
+  after_discard :discard_associated_stores
 
   # Cria o token para usuário válido
   def self.token_for(user)
@@ -27,4 +29,10 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
+
+  private
+
+  def discard_associated_stores
+    stores.discard_all
+  end
 end
