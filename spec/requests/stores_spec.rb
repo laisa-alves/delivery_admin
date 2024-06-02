@@ -13,7 +13,7 @@ RSpec.describe "/stores", type: :request do
   }
 
   let(:valid_attributes) {
-    {name: "Great Store", user: user}
+    {name: "Great Store", user: user, category: Store.categories.keys.sample}
   }
 
   let(:invalid_attributes) {
@@ -123,7 +123,7 @@ RSpec.describe "/stores", type: :request do
       store = Store.create! valid_attributes
       expect {
         delete store_url(store)
-      }.to change(Store, :count).by(-1)
+      }.to change(Store.kept, :count).by(-1)
     end
 
     it "redirects to the stores list" do
@@ -146,8 +146,8 @@ RSpec.describe "/stores", type: :request do
 
     # Esse before afeta apenas os testes desse context
     before {
-      Store.create!(name: "Store 1", user: user)
-      Store.create!(name: "Store 2", user: user)
+      Store.create!(name: "Store 1", user: user, category: Store.categories.keys.sample)
+      Store.create!(name: "Store 2", user: user, category: Store.categories.keys.sample)
 
       sign_in(admin)
     }
@@ -165,7 +165,8 @@ RSpec.describe "/stores", type: :request do
       it "creates a new Store" do
         store_attributes = {
           name: "Mug Burge",
-          user_id: user.id
+          user_id: user.id,
+          category: Store.categories.keys.sample
         }
 
         expect {
@@ -174,6 +175,59 @@ RSpec.describe "/stores", type: :request do
         }.to change(Store, :count).by(1)
 
         expect(Store.find_by(name: "Mug Burge").user).to eq user
+      end
+    end
+
+    describe "GET #discarded" do
+      context 'when user is admin' do
+        it 'renders the discarded stores page' do
+          get discarded_stores_path
+          expect(response).to have_http_status(:success)
+        end
+      end
+
+      context 'when user is not admin' do
+        it 'redirects to root path' do
+          non_admin = create(:user, role: :buyer)
+          sign_in non_admin
+          get discarded_stores_path
+          expect(response).to have_http_status(:unauthorized)
+        end
+      end
+    end
+
+    describe 'PATCH #restore' do
+      let(:store) {create(:store)}
+
+      context 'when store user is discarded' do
+        it 'does not restore the store' do
+          store.user.discard
+          patch restore_store_path(store)
+          expect(response).to redirect_to(stores_path)
+          expect(flash[:notice]).to eq('Não é possível restaurar a loja porque o usuário está descartado')
+          expect(store.reload.discarded?).to be true
+        end
+      end
+
+      context 'when store user is not discarded' do
+        it 'restore the store' do
+          store.discard
+          patch restore_store_path(store)
+          expect(response).to redirect_to(stores_path)
+          expect(flash[:notice]).to eq('Loja restaurada com sucesso.')
+          expect(store.reload.discarded?).to be false
+        end
+      end
+    end
+
+    describe 'PATCH #toggle_active' do
+      let(:store) {create(:store)}
+
+      it 'toggles the store active status' do
+        patch toggle_active_store_path(store)
+        expect(response).to redirect_to(stores_path)
+        expect(flash[:notice]).to match(/Loja (ativada|desativada) com sucesso./)
+        expect(store.reload.active?).to be_falsey
       end
     end
   end
