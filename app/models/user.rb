@@ -13,12 +13,13 @@ class User < ApplicationRecord
   def self.token_for(user)
     jwt_headers = {exp: 1.hour.from_now.to_i}
     payload = {id: user.id, email: user.email, role: user.role}
-    JWT.encode payload.merge(jwt_headers), "muito.secreto", "HS256"
+    JWT.encode payload.merge(jwt_headers), Rails.application.credentials.jwt[:decode], "HS256"
   end
 
   # Retorna dados do usuário a partir do token
   def self.from_token(token)
-    decoded = JWT.decode(token, "muito.secreto", true, {algorithm: "HS256"})
+    secret_key = Rails.application.credentials.jwt[:decode]
+    decoded = JWT.decode(token, secret_key, true, {algorithm: "HS256"})
     user_data = decoded[0].with_indifferent_access
     user_data
   rescue JWT::ExpiredSignature
