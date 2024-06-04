@@ -30,11 +30,12 @@ class ApplicationController < ActionController::Base
     current_credential && current_credential.buyer?
   end
 
-  # Método para filtrar apenas buyers
-  def only_buyers!
+  # Método para filtrar apenas buyers e admin
+  def only_buyers_or_admin!
     is_buyer = (current_user && current_user.buyer?) && current_credential.buyer?
+    is_admin = current_user && current_user.admin?
 
-    if !is_buyer
+    if !is_buyer || !is_admin
       render json: {message: "Not authorized"}, status: 401
     end
   end
