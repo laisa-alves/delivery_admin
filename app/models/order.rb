@@ -10,6 +10,26 @@ class Order < ApplicationRecord
     event :accept do
       transition created: :accepted
     end
+
+    event :ready_for_pickup do
+      transition accepted: :ready
+    end
+
+    event :dispatch do
+      transition ready: :dispatched
+    end
+
+    event :deliver do
+      transition dispatched: :delivered
+    end
+
+    event :cancel do
+      transition [:created, :accepted, :ready] => :canceled
+    end
+
+    after_transition any => any do |order, transition|
+      puts "Order transitioned from #{transition.from} to #{transition.to}"
+    end
   end
 
   private
