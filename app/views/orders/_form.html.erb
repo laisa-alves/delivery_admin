@@ -1,0 +1,64 @@
+<%= form_with(model: @order, local: true, html: { class: 'styled-form' }) do |form| %>
+  <% if @order.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(@order.errors.count, "error") %> prohibited this order from being saved:</h2>
+      <ul>
+        <% @order.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if current_user.admin? && @order.buyer_id.nil? %>
+    
+    <div style="margin-bottom: 1rem">
+      <%= form.label :buyer, 'Selecione o comprador', style: "display: block" %>
+      <%= form.collection_select :buyer_id, @buyers, :id, :email, prompt: "Compradores..." %>
+    </div>
+
+    <div style="margin-bottom: 1rem">
+      <%= form.label :store, 'Selecione a loja', style: "display: block" %>
+      <%= form.collection_select :store_id, @stores, :id, :name, { prompt: "Lojas..." }, { onchange: "updateProducts(this.value)" } %>
+    </div>
+
+    <div id="products-container" style="margin-bottom: 1rem">
+    </div>
+
+    <div style="margin-top: 1rem">
+      <%= form.submit %>
+    </div>
+  <% end %>
+<% end %>
+
+
+<script>
+  const storeProducts = {
+    <% @stores.each do |store| %>
+      <%= store.id %>: [
+        <% store.products.each do |product| %>
+          { id: <%= product.id %>, title: '<%= product.title %>'},
+        <% end %>
+      ],
+    <% end %>
+  }
+
+  function updateProducts(storeId) {
+    const productsContainer = document.getElementById('products-container')
+    productsContainer.innerHTML = ''
+
+    const products = storeProducts[storeId] || []
+
+    products.forEach(product => {
+      const productElement = document.createElement('div')
+      productElement.innerHTML = `
+        <label>
+          <input type="checkbox" name="product_ids[]" value="${product.id}">
+          ${product.title}
+        </label>
+        <input type="number" name="amount[]" min="1" value="1">
+      `
+      productsContainer.appendChild(productElement)
+    })
+  }
+</script>

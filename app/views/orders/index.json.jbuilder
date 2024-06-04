@@ -1,1 +1,1 @@
-json.array! @orders, :id, :state, :created_at
+json.array! @orders, :id, :store_id, :state, :created_at
