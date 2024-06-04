@@ -43,7 +43,7 @@ Rails.application.routes.draw do
   get "me" => "registrations#me"
 
   scope :buyers do
-    resources :orders, only: [:index, :create, :update, :destroy]
+    resources :orders
   end
 
   root "welcome#index"
