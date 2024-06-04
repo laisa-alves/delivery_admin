@@ -2,7 +2,6 @@ class StoresController < ApplicationController
   skip_forgery_protection only: %i[create update destroy toggle_active]
   before_action :authenticate!, except: [:public_index]
   before_action :restrict_buyer_access, except: [:public_index]
-  # before_action :only_seller_or_admins!, except: [:index]
   before_action :set_store, only: %i[ show edit update destroy restore toggle_active ]
   rescue_from User::InvalidToken, with: :not_authorized
 
@@ -17,6 +16,7 @@ class StoresController < ApplicationController
     end
   end
 
+  # GET /stores/public
   def public_index
     if is_buyer?
       @stores = Store.kept.where(active: true)
@@ -130,7 +130,7 @@ class StoresController < ApplicationController
     def store_params
       required = params.require(:store)
 
-      # Se usuário é admin permite enviar o campo de usuário (dono da loja) além do nome
+      # Se usuário é admin permite enviar o campo de usuário (dono da loja)
       if current_user.admin?
         required.permit(:name, :user_id, :image, :category)
       else
