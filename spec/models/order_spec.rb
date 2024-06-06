@@ -6,34 +6,16 @@ RSpec.describe Order, type: :model do
     it { should belong_to(:store) }
     it { should have_many(:order_items) }
     it { should have_many(:products).through(:order_items) }
+    it { should accept_nested_attributes_for(:order_items)}
   end
 
-
-  let(:buyer) do
-    buyer = User.create!(
-      email: 'buyer@email.com',
-      password: '123456',
-      password_confirmation: '123456',
-      role: :buyer
-    )
-    buyer
-  end
-
-  let(:seller) do
-    seller = User.create!(
-      email: 'seller@email.com',
-      password: '123456',
-      password_confirmation: '123456',
-      role: :seller
-    )
-    seller
-  end
-
-  let(:store) do
-    Store.create!(name: 'Store name', user: seller)
-  end
+  let(:buyer) {create(:user, role: :buyer)}
+  let(:seller) {create(:user, role: :seller)}
+  let(:store) {create(:store, user: seller)}
 
   describe 'validations' do
+    it { should validate_presence_of(:store) }
+
     it "should be valid if buyer role is 'buyer'" do
       order = Order.create(buyer:, store:)
       expect(order).to be_valid
@@ -46,19 +28,68 @@ RSpec.describe Order, type: :model do
     end
   end
 
-  describe 'state machine' do
+  describe '#total_order_price' do
+    let(:order) { Order.create!(buyer:, store:)}
+    let(:product1) { create(:product, store:) }
+    let(:product2) { create(:product, store:) }
+
+    before do
+      order.order_items.create!(product: product1, amount: 2, price: product1.price )
+      order.order_items.create!(product: product2, amount: 5, price: product2.price )
+    end
+
+    it 'returns the sum of the prices of the order items' do
+      expect(order.total_order_price).to eq(2*product1.price + 5*product2.price)
+    end
+  end
+
+  describe 'state transitions' do
     let(:order) do
       order = Order.create!(buyer:, store:)
       order
     end
 
-    it "starts with state 'created'" do
+    it "starts with state created" do
       expect(order.state).to eq 'created'
     end
 
-    it "transitions from 'created' to 'accepted'" do
+    it "transitions from created to accepted when accepted" do
       order.accept
       expect(order.state).to eq 'accepted'
+    end
+
+    it 'transitions from accepted to ready when ready_for_pickup' do
+      order.accept
+      order.ready_for_pickup
+      expect(order.state).to eq 'ready'
+    end
+
+    it 'transitions from ready to dispached when dispatch' do
+      order.accept
+      order.ready_for_pickup
+      order.dispatch
+      expect(order.state).to eq 'dispatched'
+    end
+
+    it 'tanstitions from dispatched to deliverd when deliver' do
+      order.accept
+      order.ready_for_pickup
+      order.dispatch
+      order.deliver
+      expect(order.state).to eq 'delivered'
+    end
+
+    it 'transitions to canceled when cancel' do
+      order.accept
+      order.cancel
+      expect(order.state).to eq 'canceled'
+    end
+
+    it 'does not transitions to canceled after dispatched' do
+      order.accept
+      order.ready_for_pickup
+      order.dispatch
+      expect{ order.cancel! }.to raise_error (StateMachines::InvalidTransition)
     end
 
     it "doesn't transition to 'accepted' if not in 'created' state" do
