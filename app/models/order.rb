@@ -9,6 +9,10 @@ class Order < ApplicationRecord
   validate :buyer_role
   validates :store, presence: true
 
+  def total_order_price
+    order_items.map(&:total_price).sum
+  end
+
   state_machine initial: :created do
     event :accept do
       transition created: :accepted

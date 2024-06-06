@@ -7,3 +7,4 @@ json.order_items order.order_items do |order_item|
   json.extract! order_item, :total_price
   json.product order_item.product, :id, :title
 end
+json.total order.total_order_price
