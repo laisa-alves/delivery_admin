@@ -14,7 +14,11 @@ class OrdersController < ApplicationController
 
   # GET /buyers/orders/1
   def show
-
+    if current_user.admin?
+      @order = Order.includes([:buyer, :store, order_items: :product]).find(params[:id])
+    else
+      @order = Order.where(buyer: current_user).includes([:store, order_items: :product]).find(params[:id])
+    end
   end
 
   # GET /buyers/orders/new
