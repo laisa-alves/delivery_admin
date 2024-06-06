@@ -62,4 +62,24 @@ RSpec.describe User, type: :model do
       end
     end
   end
+
+  describe 'from_token' do
+    it 'return user data from a valid JWT token' do
+      user = create(:user)
+      token = User.token_for(user)
+      user_data = User.from_token(token)
+
+      expect(user_data[:id]).to eq(user.id)
+      expect(user_data[:email]).to eq(user.email)
+      expect(user_data[:role]).to eq(user.role)
+    end
+
+    it 'raises InvalidToken for an expired token' do
+      user = create(:user)
+      token = User.token_for(user)
+      travel_to 2.hours.from_now do
+        expect { User.from_token(token) }.to raise_error(User::InvalidToken)
+      end
+    end
+  end
 end
