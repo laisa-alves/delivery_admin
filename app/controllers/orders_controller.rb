@@ -20,8 +20,8 @@ class OrdersController < ApplicationController
   # GET /buyers/orders/new
   def new
     @order = Order.new
-    @stores = Store.kept
-    @products = Product.kept
+    @order.order_items.build
+    @stores = Store.kept.includes(:products)
 
     if current_user.admin?
       @buyers = User.kept.where(role: :buyer)
@@ -42,10 +42,14 @@ class OrdersController < ApplicationController
       @order = Order.new(order_params) { |o| o.buyer = current_user }
     end
 
-    if @order.save
-      render :create, status: :created
-    else
-      render json: { errors: @order.errors, status: :unprocessable_entity }
+    respond_to do |format|
+      if @order.save
+        format.html {redirect_to orders_url, notice: "Pedido criado com sucesso."}
+        format.json {render :create, status: :created}
+      else
+        format.html {render :new, status: :unprocessable_entity}
+        format.json {render json: @order.errors, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -65,7 +69,7 @@ class OrdersController < ApplicationController
     required = params.require(:order)
 
     if current_user.admin?
-      required.permit(:user_id, :store_id, order_items_attributes: [:product_id, :amount, :price])
+      required.permit(:buyer_id, :store_id, order_items_attributes: [:product_id, :amount, :price])
     else
       required.permit(:store_id, order_items_attributes: [:product_id, :amount, :price])
     end

@@ -7,6 +7,7 @@ class Order < ApplicationRecord
   accepts_nested_attributes_for :order_items
 
   validate :buyer_role
+  validates :store, presence: true
 
   state_machine initial: :created do
     event :accept do
