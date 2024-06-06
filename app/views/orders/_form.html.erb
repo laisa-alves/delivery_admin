@@ -1,9 +1,9 @@
-<%= form_with(model: @order, local: true, html: { class: 'styled-form' }) do |form| %>
-  <% if @order.errors.any? %>
+<%= form_with(model: order, local: true, html: { class: 'styled-form' }) do |form| %>
+  <% if order.errors.any? %>
     <div style="color: red">
-      <h2><%= pluralize(@order.errors.count, "error") %> prohibited this order from being saved:</h2>
+      <h2><%= pluralize(order.errors.count, "error") %> prohibited this order from being saved:</h2>
       <ul>
-        <% @order.errors.full_messages.each do |message| %>
+        <% order.errors.full_messages.each do |message| %>
           <li><%= message %></li>
         <% end %>
       </ul>
@@ -13,18 +13,28 @@
   <% if current_user.admin? && @order.buyer_id.nil? %>
     
     <div style="margin-bottom: 1rem">
-      <%= form.label :buyer, 'Selecione o comprador', style: "display: block" %>
+      <%= form.label :buyer_id, 'Selecione o comprador', style: "display: block" %>
       <%= form.collection_select :buyer_id, @buyers, :id, :email, prompt: "Compradores..." %>
     </div>
 
     <div style="margin-bottom: 1rem">
-      <%= form.label :store, 'Selecione a loja', style: "display: block" %>
-      <%= form.collection_select :store_id, @stores, :id, :name, { prompt: "Lojas..." }, { onchange: "updateProducts(this.value)" } %>
+      <%= form.label :store_id, 'Selecione a loja', style: "display: block" %>
+      <%= form.collection_select :store_id, @stores, :id, :name, { prompt: "Lojas..." } %>
     </div>
 
-    <div id="products-container" style="margin-bottom: 1rem">
+    <div>
+      <%= form.fields_for :order_items do |order_items_form| %>
+        <%= order_items_form.label :product_id, 'Selecione o produto' %>
+        <%= order_items_form.collection_select :product_id, [], :id, :title, { prompt: "Produtos..."} %>
+        <%= order_items_form.label :amount, 'Quantidade' %>
+        <%= order_items_form.number_field :amount, value: 1, min: 1 %>
+        <button type="button" id="add_product_button" >Adicionar produto</button>
+      <% end %>
     </div>
 
+    <div id="selected_products_list">
+    </div>
+    
     <div style="margin-top: 1rem">
       <%= form.submit %>
     </div>
@@ -33,32 +43,97 @@
 
 
 <script>
+document.addEventListener("DOMContentLoaded", function() {
+  const storeSelect = document.querySelector('select[name="order[store_id]"]');
+  const productSelect = document.querySelector('select[name="order[order_items_attributes][0][product_id]"]');
+  const amountInput = document.querySelector('input[name="order[order_items_attributes][0][amount]"]');
+  const priceInput = document.querySelector('input[name="order[order_items_attributes][0][price]"]');
+  const addProductButton = document.getElementById('add_product_button');
+  const selectedProductsList = document.getElementById('selected_products_list');
+
+  if (!storeSelect || !productSelect || !amountInput || !addProductButton || !selectedProductsList) {
+    console.error("Um ou mais elementos não foram encontrados no DOM.");
+    return;
+  }
+  
   const storeProducts = {
     <% @stores.each do |store| %>
       <%= store.id %>: [
         <% store.products.each do |product| %>
-          { id: <%= product.id %>, title: '<%= product.title %>'},
+          { id: <%= product.id %>, title: '<%= product.title %>', price: <%= product.price %>},
         <% end %>
       ],
     <% end %>
-  }
+  };
+
+  let itemIndex = 0;
 
   function updateProducts(storeId) {
-    const productsContainer = document.getElementById('products-container')
-    productsContainer.innerHTML = ''
-
-    const products = storeProducts[storeId] || []
+    const products = storeProducts[storeId] || [];
+    
+    productSelect.innerHTML = '<option value="">Produtos...</option>'; 
 
     products.forEach(product => {
-      const productElement = document.createElement('div')
-      productElement.innerHTML = `
-        <label>
-          <input type="checkbox" name="product_ids[]" value="${product.id}">
-          ${product.title}
-        </label>
-        <input type="number" name="amount[]" min="1" value="1">
-      `
-      productsContainer.appendChild(productElement)
-    })
+      const option = document.createElement('option');
+      option.value = product.id;
+      option.textContent = `${product.title} - R$ ${product.price.toFixed(2)}`;
+      option.setAttribute('data-price', product.price);
+      productSelect.appendChild(option);
+    });
   }
+
+  storeSelect.addEventListener('change', function() {
+    updateProducts(this.value);
+  });
+
+  addProductButton.addEventListener('click', function() {
+    const selectedProductId = productSelect.value;
+    const selectedProductText = productSelect.options[productSelect.selectedIndex].text;
+    const selectedProductPrice = productSelect.options[productSelect.selectedIndex].getAttribute('data-price');
+    const selectedProductAmount = amountInput.value;
+
+    if (selectedProductId && selectedProductAmount) {
+      const productRow = document.createElement('div');
+      productRow.classList.add('product-row');
+      productRow.innerHTML = `
+        <input type="hidden" name="order[order_items_attributes][${itemIndex}][product_id]" value="${selectedProductId}">
+        <input type="hidden" name="order[order_items_attributes][${itemIndex}][amount]" value="${selectedProductAmount}">
+        <input type="hidden" name="order[order_items_attributes][${itemIndex}][price]" value="${selectedProductPrice}">
+        <div style="display: flex; flex-direction: column;">
+          <span><b>Produto:</b> ${selectedProductText}</span>
+          <span><b>Quantidade:</b> ${selectedProductAmount}</span>
+        </div>
+        <button type="button" class="remove-product-button">Remover</button>
+      `;
+      selectedProductsList.appendChild(productRow);
+      itemIndex++;
+    }
+  });
+
+  selectedProductsList.addEventListener('click', function(event) {
+    if (event.target.classList.contains('remove-product-button')) {
+      const productRow = event.target.closest('.product-row');
+      productRow.remove();
+    }
+  });
+
+  // Initial update
+  if (storeSelect.value) {
+    updateProducts(storeSelect.value);
+  }
+
+});
 </script>
+
+
+<style>
+.styled-form .product-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.styled-form .product-row span {
+  margin-right: 1rem;
+}
+
+</style>
