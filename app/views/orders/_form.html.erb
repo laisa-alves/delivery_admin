@@ -14,12 +14,12 @@
     
     <div style="margin-bottom: 1rem">
       <%= form.label :buyer_id, 'Selecione o comprador', style: "display: block" %>
-      <%= form.collection_select :buyer_id, @buyers, :id, :email, prompt: "Compradores..." %>
+      <%= form.collection_select :buyer_id, @buyers || [], :id, :email, prompt: "Compradores..." %>
     </div>
 
     <div style="margin-bottom: 1rem">
       <%= form.label :store_id, 'Selecione a loja', style: "display: block" %>
-      <%= form.collection_select :store_id, @stores, :id, :name, { prompt: "Lojas..." } %>
+      <%= form.collection_select :store_id, @stores || [], :id, :name, { prompt: "Lojas..." } %>
     </div>
 
     <div>
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function() {
   }
   
   const storeProducts = {
-    <% @stores.each do |store| %>
+    <% (@stores || []).each do |store| %>
       <%= store.id %>: [
         <% store.products.each do |product| %>
           { id: <%= product.id %>, title: '<%= product.title %>', price: <%= product.price %>},
