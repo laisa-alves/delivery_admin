@@ -9,10 +9,16 @@ RUN apt-get update -qq && \
 RUN gem install bundler -v 2.5.5
 
 # Cria um diretório na imagem onde vão viver os arquidos da aplicação Rails
+RUN mkdir /delivery_admin
 WORKDIR /delivery_admin
 
 # Copia todos os arquivos (atuais) da aplicação para a imagem
-COPY . /delivery_admin
+COPY . .
+
+# Copia o Gemfile e o Gemfile.lock para a imagem
+COPY Gemfile Gemfile.lock ./
 
 # Instala as dependências da aplicação
 RUN bundle install
+
+CMD ["bash", "-c", "rm -f tmp/pids/server.pid && bundle exec rails s -b '0.0.0.0' -p 3000"]
