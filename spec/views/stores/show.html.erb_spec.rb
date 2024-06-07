@@ -15,7 +15,8 @@ RSpec.describe "stores/show", type: :view do
   before(:each) do
     assign(:store, Store.create!(
       name: "Name",
-      user: user
+      user: user,
+      category: Store.categories.keys.sample
     ))
   end
 
