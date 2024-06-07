@@ -1,7 +1,7 @@
 class Order < ApplicationRecord
   belongs_to :buyer, class_name: "User"
   belongs_to :store
-  has_many :order_items
+  has_many :order_items, inverse_of: :order
   has_many :products, through: :order_items
 
   accepts_nested_attributes_for :order_items
