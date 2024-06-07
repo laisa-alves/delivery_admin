@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe 'Products', type: :request do
+RSpec.describe ProductsController, type: :request do
   let(:admin) { create(:user) }
   let(:buyer) { create(:user, role: :buyer) }
   let(:store) { create(:store) }

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "/stores", type: :request do
+RSpec.describe StoresController, type: :request do
   let(:user) {
     user = User.new(
       email: "user_01@example.com",
