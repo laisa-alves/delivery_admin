@@ -41,20 +41,31 @@ class OrdersController < ApplicationController
   # POST /buyers/orders
   def create
     @order = Order.new(order_params)
-
-    if current_user.buyer?
-      @order = Order.new(order_params) { |o| o.buyer = current_user }
-    end
+    @order.buyer = current_user if current_user.buyer?
 
     respond_to do |format|
       if @order.save
-        format.html {redirect_to orders_url, notice: "Pedido criado com sucesso."}
+        payment_params = {
+          number: params[:number],
+          valid: params[:valid],
+          cvv: params[:cvv].to_i
+        }
+        process_payment(@order, payment_params)
+
+        format.html {redirect_to order_url(@order), notice: "Pedido criado com sucesso. Processando o pagamento."}
         format.json {render :create, status: :created}
       else
         format.html {render :new, status: :unprocessable_entity}
         format.json {render json: @order.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  def pay
+    @order = Order.find(params[:id])
+
+    PaymentJob.perform_later(order: @order, value: @order.total_order_price, number: @order.card_number, valid: @order.card_valid, cvv: @order.card_cvv)
+
   end
 
   # PATCH/PUT /buyers/orders/1
@@ -77,5 +88,15 @@ class OrdersController < ApplicationController
     else
       required.permit(:store_id, order_items_attributes: [:product_id, :amount, :price])
     end
+  end
+
+  def process_payment(order, payment_params)
+    PaymentJob.perform_later(
+      order: order,
+      value: order.total_order_price,
+      number: payment_params[:number],
+      valid: payment_params[:valid],
+      cvv: payment_params[:cvv]
+    )
   end
 end
