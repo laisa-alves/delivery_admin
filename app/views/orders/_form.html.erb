@@ -11,6 +11,7 @@
   <% end %>
 
   <% if current_user.admin? && @order.buyer_id.nil? %>
+    <h3>Dados do pedido</h3>
     
     <div style="margin-bottom: 1rem">
       <%= form.label :buyer_id, 'Selecione o comprador', style: "display: block" %>
@@ -32,8 +33,29 @@
       <% end %>
     </div>
 
+
     <div id="selected_products_list">
     </div>
+
+    <hr>
+
+    <h3>Pagamento</h3>
+
+    <div>
+      <%= label_tag :number, "Número do cartão" %>
+      <%= text_field_tag :number, nil, required: true%>
+    </div>
+
+    <div style="display: flex; justify-content: space-between">
+    <div>
+      <%= label_tag :valid, 'Validade' %>
+      <%= text_field_tag :valid, nil %>
+    </div>
+    <div>
+      <%= label_tag :cvv, 'CVV' %>
+      <%= text_field_tag :cvv, nil, pattern: '\\d*', inputmode: 'numeric', maxlength: 4, required: true %>
+    </div>
+  </div>
     
     <div style="margin-top: 1rem">
       <%= form.submit %>

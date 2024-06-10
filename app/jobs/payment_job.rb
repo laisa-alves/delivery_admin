@@ -5,7 +5,11 @@ class PaymentJob < ApplicationJob
     params = { payment: {value: value, number: number, valid: valid, cvv: cvv}}
     response = con.post("/payments", params.to_json)
 
-    # order.paid if response.success?
+    if response.success?
+      order.payment_successful
+    else
+      order.payment_failed
+    end
   end
 
   private

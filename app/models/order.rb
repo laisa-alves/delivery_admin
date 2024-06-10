@@ -1,21 +1,32 @@
 class Order < ApplicationRecord
+  # Associations
   belongs_to :buyer, class_name: "User"
   belongs_to :store
   has_many :order_items, inverse_of: :order
   has_many :products, through: :order_items
-
   accepts_nested_attributes_for :order_items
 
+  # Validations
   validate :buyer_role
   validates :store, presence: true
 
+  # Methods
   def total_order_price
     order_items.map(&:total_price).sum
   end
 
+  # State Machine
   state_machine initial: :created do
+    event :payment_successful do
+      transition created: :payment_accepted
+    end
+
+    event :payment_failed do
+      transition created: :payment_declined
+    end
+
     event :accept do
-      transition created: :accepted
+      transition payment_accepted: :accepted
     end
 
     event :ready_for_pickup do
@@ -31,9 +42,10 @@ class Order < ApplicationRecord
     end
 
     event :cancel do
-      transition [:created, :accepted, :ready] => :canceled
+      transition [:created, :payment_accepted, :accepted] => :canceled
     end
 
+    # Transitions callbacks
     after_transition any => any do |order, transition|
       puts "Order transitioned from #{transition.from} to #{transition.to}"
     end
