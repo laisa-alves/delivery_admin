@@ -10,6 +10,9 @@ Rails.application.configure do
     Bullet.add_footer    = true
   end
 
+  # Allow connections from 'paymenty' service
+  config.hosts << "paymenty"
+
   # Settings specified here will take precedence over those in config/application.rb.
 
   # In the development environment your application's code is reloaded any time
