@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const storeProducts = {
     <% (@stores || []).each do |store| %>
       <%= store.id %>: [
-        <% store.products.each do |product| %>
+        <% store.products.kept.each do |product| %>
           { id: <%= product.id %>, title: '<%= product.title %>', price: <%= product.price %>},
         <% end %>
       ],
