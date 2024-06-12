@@ -4,12 +4,14 @@ class OrdersController < ApplicationController
 
   # GET /buyers/orders
   def index
-    if current_user.admin?
-      @orders = Order.includes([:buyer, :store, order_items: :product])
+    @orders = orders_for(current_user)
 
-    elsif current_user.buyer?
-      @orders = Order.includes([:store, :buyer, order_items: :product]).where(buyer: current_user)
-    end
+    # if current_user.admin?
+    #   @orders = Order.includes([:buyer, :store, order_items: :product])
+
+    # elsif current_user.buyer?
+    #   @orders = Order.includes([:store, :buyer, order_items: :product]).where(buyer: current_user)
+    # end
   end
 
   # GET /buyers/orders/1
@@ -34,9 +36,7 @@ class OrdersController < ApplicationController
   end
 
   # GET /buyers/orders/1/edit
-  def edit
-
-  end
+  def edit; end
 
   # POST /buyers/orders
   def create
@@ -69,14 +69,10 @@ class OrdersController < ApplicationController
   end
 
   # PATCH/PUT /buyers/orders/1
-  def update
-
-  end
+  def update; end
 
   # DELETE /buyers/orders/1
-  def destroy
-
-  end
+  def destroy; end
 
   private
 
@@ -87,6 +83,18 @@ class OrdersController < ApplicationController
       required.permit(:buyer_id, :store_id, order_items_attributes: [:product_id, :amount, :price])
     else
       required.permit(:store_id, order_items_attributes: [:product_id, :amount, :price])
+    end
+  end
+
+  def orders_for(user)
+    if user.admin?
+      @orders = Order.includes([:buyer, :store, order_items: :product])
+
+    elsif user.buyer?
+      @orders = Order.includes([:store, :buyer, order_items: :product]).where(buyer: user)
+
+    elsif user.seller?
+      @orders = Order.includes([:buyer, :store, order_items: :product]).where(store: user.stores, state: ['payment_accepted', 'accepted', 'ready', 'dispatched', 'delivered'])
     end
   end
 
