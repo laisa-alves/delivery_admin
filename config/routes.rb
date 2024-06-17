@@ -43,7 +43,15 @@ Rails.application.routes.draw do
   get "me" => "registrations#me"
 
   scope :buyers do
-    resources :orders
+    resources :orders, only: [:index, :show, :new, :create] do
+      member do
+        put 'accept', to: 'orders#accept_order'
+        put 'ready', to: 'orders#order_ready_for_pickup'
+        put 'dispatch', to: 'orders#dispatch_order'
+        put 'deliver', to: 'orders#deliver_order'
+        put 'cancel', to: 'orders#cancel_order'
+      end
+    end
   end
 
   root "welcome#index"
