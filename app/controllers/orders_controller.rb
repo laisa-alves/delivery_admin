@@ -1,42 +1,28 @@
 class OrdersController < ApplicationController
   skip_forgery_protection
   before_action :authenticate!
+  before_action :set_order, only: %i[show accept_order order_ready_for_pickup dispatch_order deliver_order cancel_order]
+  before_action :restrict_buyer_access, only: %i[accept_order order_ready_for_pickup dispatch_order deliver_order cancel_order]
+  rescue_from User::InvalidToken, with: :not_authorized
 
   # GET /buyers/orders
   def index
     @orders = orders_for(current_user)
-
-    # if current_user.admin?
-    #   @orders = Order.includes([:buyer, :store, order_items: :product])
-
-    # elsif current_user.buyer?
-    #   @orders = Order.includes([:store, :buyer, order_items: :product]).where(buyer: current_user)
-    # end
   end
 
   # GET /buyers/orders/1
-  def show
-    if current_user.admin?
-      @order = Order.includes([:buyer, :store, order_items: :product]).find(params[:id])
-    else
-      @order = Order.where(buyer: current_user).includes([:store, order_items: :product]).find(params[:id])
-    end
-  end
+  def show; end
 
   # GET /buyers/orders/new
   def new
     @order = Order.new
     @order.order_items.build
-    @stores = Store.kept.includes(:products)
+    @stores = Store.kept
 
-    if current_user.admin?
-      @buyers = User.kept.where(role: :buyer)
-    end
+    return unless current_user.admin?
 
+    @buyers = User.kept.where(role: :buyer)
   end
-
-  # GET /buyers/orders/1/edit
-  def edit; end
 
   # POST /buyers/orders
   def create
@@ -52,49 +38,97 @@ class OrdersController < ApplicationController
         }
         process_payment(@order, payment_params)
 
-        format.html {redirect_to order_url(@order), notice: "Pedido criado com sucesso. Processando o pagamento."}
-        format.json {render :create, status: :created}
+        format.html { redirect_to order_url(@order), notice: 'Pedido criado com sucesso. Processando o pagamento.' }
+        format.json { render :create, status: :created }
       else
-        format.html {render :new, status: :unprocessable_entity}
-        format.json {render json: @order.errors, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: @order.errors, status: :unprocessable_entity }
       end
     end
   end
 
-  def pay
-    @order = Order.find(params[:id])
+  # State machine events
+  def accept_order
+    return unless @order.accept
 
-    PaymentJob.perform_later(order: @order, value: @order.total_order_price, number: @order.card_number, valid: @order.card_valid, cvv: @order.card_cvv)
-
+    @order.save
+    render json: { order_status: @order.state, message: 'Pedido aceito pelo lojista.' }
   end
 
-  # PATCH/PUT /buyers/orders/1
-  def update; end
+  def order_ready_for_pickup
+    return unless @order.ready_for_pickup
 
-  # DELETE /buyers/orders/1
-  def destroy; end
+    @order.save
+    render json: { order_status: @order.state, message: 'Pedido pronto para ser pego pelo entregador.' }
+  end
+
+  def dispatch_order
+    return unless @order.dispatch
+
+    @order.save
+    render json: { order_status: @order.state, message: 'Pedido em rota de entrega.' }
+  end
+
+  def deliver_order
+    return unless @order.deliver
+
+    @order.save
+    render json: { order_status: @order.state, message: 'Pedido entregue.' }
+  end
+
+  def cancel_order
+    return unless @order.cancel
+
+    @order.save
+    render json: { order_status: @order.state, message: 'Pedido cancelado.' }
+  end
+
+  # def pay
+  #   @order = Order.find(params[:id])
+
+  #   PaymentJob.perform_later(order: @order, value: @order.total_order_price, number: @order.card_number, valid: @order.card_valid, cvv: @order.card_cvv)
+
+  # end
 
   private
+
+  def set_order
+    @order = if current_user.admin?
+               Order.includes([:store, { order_items: :product }]).find(params[:id])
+             elsif current_user.seller?
+               Order.where(store: current_user.stores).includes([:store, { order_items: :product }]).find(params[:id])
+             elsif current_user.buyer?
+               Order.where(buyer: current_user).includes([:store, { order_items: :product }]).find(params[:id])
+             end
+  rescue ActiveRecord::RecordNotFound => e
+    respond_to do |format|
+      format.html { redirect_to orders_url, notice: 'Pedido não encontrado.' }
+      format.json { render json: { error: e.message }, status: :not_found }
+    end
+  end
 
   def order_params
     required = params.require(:order)
 
     if current_user.admin?
-      required.permit(:buyer_id, :store_id, order_items_attributes: [:product_id, :amount, :price])
+      required.permit(:buyer_id, :store_id, order_items_attributes: %i[product_id amount price])
     else
-      required.permit(:store_id, order_items_attributes: [:product_id, :amount, :price])
+      required.permit(:store_id, order_items_attributes: %i[product_id amount price])
     end
   end
 
   def orders_for(user)
     if user.admin?
-      @orders = Order.includes([:buyer, :store, order_items: :product])
+      @orders = Order.includes([:buyer, :store, { order_items: :product }])
 
     elsif user.buyer?
-      @orders = Order.includes([:store, :buyer, order_items: :product]).where(buyer: user)
+      @orders = Order.includes([:store, :buyer, { order_items: :product }]).where(buyer: user)
 
     elsif user.seller?
-      @orders = Order.includes([:buyer, :store, order_items: :product]).where(store: user.stores, state: ['payment_accepted', 'accepted', 'ready', 'dispatched', 'delivered'])
+      @orders = Order.includes([:buyer, :store, { order_items: :product }]).where(store: user.stores,
+                                                                                  state: %w[
+                                                                                    payment_accepted accepted ready dispatched delivered canceled
+                                                                                  ])
     end
   end
 
@@ -106,5 +140,10 @@ class OrdersController < ApplicationController
       valid: payment_params[:valid],
       cvv: payment_params[:cvv]
     )
+  end
+
+  # Rescue methods
+  def not_authorized(_e)
+    render json: { message: 'Usuário não autorizado!' }, status: 401
   end
 end
