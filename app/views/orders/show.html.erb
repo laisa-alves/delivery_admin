@@ -1,3 +1,29 @@
-<p style="color: green"><%= notice %></p>
+<!-- app/views/orders/show.html.erb -->
+<% if @order.present? %>
+  <h1>Detalhes do Pedido</h1>
+  <p><strong>ID do Pedido:</strong> <%= @order.id %></p>
+  <p><strong>Data do Pedido:</strong> <%= @order.created_at.strftime("%d/%m/%Y %H:%M") %></p>
+  <p><strong>Loja:</strong> <%= @order.store.name %></p>
 
-<h1>Pedido</h1>
+  <h2>Itens do Pedido</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Produto</th>
+        <th>Quantidade</th>
+        <th>Preço</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @order.order_items.each do |item| %>
+        <tr>
+          <td><%= item.product.name %></td>
+          <td><%= item.quantity %></td>
+          <td>R$ <%= item.price %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>Pedido não encontrado.</p>
+<% end %>
