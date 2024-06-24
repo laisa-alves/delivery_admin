@@ -4,7 +4,7 @@ class StoresController < ApplicationController
   before_action :restrict_buyer_access, except: [:public_index]
   before_action :set_store, only: %i[ show edit update destroy restore toggle_active ]
   rescue_from User::InvalidToken, with: :not_authorized
-
+  include ActionController::Live
 
   # GET /stores or /stores.json
   def index
@@ -46,6 +46,26 @@ class StoresController < ApplicationController
 
   # GET /stores/1/edit
   def edit
+  end
+
+  # GET new order
+  def new_order
+    response.headers["Content-Type"] = "text/event-stream"
+    sse = SSE.new(response.stream, retry: 300, event: "waiting-orders")
+    sse.write({ message: "Aguardando novos pedidos..." }, event: "waiting-orders")
+
+    loop do
+      sleep(2)
+      order = Order.where(store_id: params[:id], state: :payment_accepted)
+      if order
+        sse.write({ order: order }, event: "new-order")
+      end
+    end
+
+  rescue ActionController::Live::ClientDisconnected
+    sse.close
+  ensure
+    sse.close
   end
 
   # POST /stores or /stores.json

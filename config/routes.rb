@@ -32,8 +32,8 @@ Rails.application.routes.draw do
     member do
       patch 'restore'
       patch 'toggle_active'
+      get 'orders/new', to: 'stores#new_order'
     end
-
   end
 
   get "listing" => "products#listing"
