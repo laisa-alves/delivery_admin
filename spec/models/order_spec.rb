@@ -53,18 +53,26 @@ RSpec.describe Order, type: :model do
       expect(order.state).to eq 'created'
     end
 
-    it "transitions from created to accepted when accepted" do
+    it "transitions from created to payment_accepted when payment_successful" do
+      order.payment_successful
+      expect(order.state).to eq 'payment_accepted'
+    end
+
+    it "transitions from payment_accepted to accepted when accept" do
+      order.payment_successful
       order.accept
       expect(order.state).to eq 'accepted'
     end
 
     it 'transitions from accepted to ready when ready_for_pickup' do
+      order.payment_successful
       order.accept
       order.ready_for_pickup
       expect(order.state).to eq 'ready'
     end
 
     it 'transitions from ready to dispached when dispatch' do
+      order.payment_successful
       order.accept
       order.ready_for_pickup
       order.dispatch
@@ -72,6 +80,7 @@ RSpec.describe Order, type: :model do
     end
 
     it 'tanstitions from dispatched to deliverd when deliver' do
+      order.payment_successful
       order.accept
       order.ready_for_pickup
       order.dispatch
@@ -85,15 +94,25 @@ RSpec.describe Order, type: :model do
       expect(order.state).to eq 'canceled'
     end
 
-    it 'does not transitions to canceled after dispatched' do
+    it "transitions from created to payment_declined when payment_failed" do
+      order.payment_failed
+      expect(order.state).to eq 'payment_declined'
+    end
+
+    it 'does not transitions to accepted after payment_failed' do
+      order.payment_failed
+      expect{ order.accept! }.to raise_error(StateMachines::InvalidTransition)
+    end
+
+    it 'does not transitions to canceled after accepted' do
+      order.payment_successful
       order.accept
       order.ready_for_pickup
-      order.dispatch
       expect{ order.cancel! }.to raise_error (StateMachines::InvalidTransition)
     end
 
-    it "doesn't transition to 'accepted' if not in 'created' state" do
-      order = Order.create(buyer:, store:, state: :accepted)
+    it "doesn't transition to 'accepted' if not in 'payment_accepted' state" do
+      order = Order.create(buyer:, store:, state: :ready)
       expect { order.accept! }.to raise_error(StateMachines::InvalidTransition)
     end
   end

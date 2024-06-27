@@ -46,9 +46,9 @@ class Order < ApplicationRecord
     end
 
     # Transitions callbacks
-    after_transition any => any do |order, transition|
-      puts "Order transitioned from #{transition.from} to #{transition.to}"
-    end
+    # after_transition any => any do |order, transition|
+    #   puts "Order transitioned from #{transition.from} to #{transition.to}"
+    # end
   end
 
   private

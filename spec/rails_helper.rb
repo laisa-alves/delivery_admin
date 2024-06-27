@@ -58,6 +58,8 @@ RSpec.configure do |config|
 
   config.include APIRequestHelpers, type: :request
 
+  config.include ActiveJob::TestHelper, type: :job
+
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [
     Rails.root.join('spec/fixtures')
